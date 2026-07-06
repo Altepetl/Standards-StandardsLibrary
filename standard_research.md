@@ -1,7 +1,7 @@
 ---
 title: standard_research command
 status: draft
-version: 0.2.0
+version: 0.3.0
 created: 2026-07-05
 updated: 2026-07-06
 description: Research and compile the programming standards for a specific language into StandardLibrary, in parallel with N sub-agents
@@ -29,7 +29,7 @@ Read the file `Instructions.md` at the repository root. It contains the complete
 
 3. **New language.** If the directory does not exist:
    - Read `common/ConstituentElements.md` — the research backbone.
-   - **Create `<language>/research-tracking.md`**: one table row per research point of the backbone (19 rows, one per section), with columns **Status | Research Point | Details | Start | End** (status empty = not researched, `✅` done, `❌` error, `⚠️` warning; Details holds the problem description, empty if OK).
+   - **Create `<language>/research-tracking.md`**: one table row per research point of the backbone (26 rows, one per section), with columns **Status | Research Point | Details | Start | End** (status empty = not researched, `✅` done, `❌` error, `⚠️` warning; Details holds the problem description, empty if OK).
 
 4. **Parallel research.** Launch **`agents`** sub-agents working simultaneously. Sections are independent — no sequential order. Each sub-agent, in a loop:
    - Claims the next unclaimed row by writing its **Start** timestamp.

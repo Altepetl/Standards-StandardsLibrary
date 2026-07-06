@@ -18,7 +18,7 @@ Defined in `standard_research.md` at the repository root (intended location: `.c
 
 What the command does:
 - If `<language>/` already exists: reports creation/last-review dates, asks the user whether to re-review, and stops if declined.
-- If `<language>/` does not exist: reads `common/ConstituentElements.md` (the 14-section research backbone), researches each section for the target language using authoritative sources, and writes one document per section into `<language>/<category>/`.
+- If `<language>/` does not exist: reads `common/ConstituentElements.md` (the 26-section research backbone), researches each section for the target language using authoritative sources, and writes one document per section into `<language>/<category>/`.
 
 ## Document Authoring Rules
 
@@ -47,20 +47,29 @@ The `/standard_research` command reads `created` and `updated` to report researc
 ├── Instructions.md              # Full workflow for /standard_research — read before acting
 ├── standard_research.md         # Slash command definition (→ .claude/commands/)
 ├── common/
-│   └── ConstituentElements.md   # ⭐ Research backbone — 14 sections, NEVER moved or copied
+│   └── ConstituentElements.md   # ⭐ Research backbone — 26 sections, NEVER moved or copied
 ├── rust/                        # Placeholder (empty)
 └── <language>/                  # One directory per language, populated by /standard_research
-    ├── common/                  # General rules (scope, naming, formatting, language rules)
-    ├── documentation/
+    ├── common/                  # General rules (scope, naming, formatting, language rules, time/unicode)
+    ├── documentation/           # Code docs and comments
     ├── error-handling/
     ├── security/
     ├── dependencies/
     ├── testing/
     ├── version-control/
     ├── automation/
+    ├── build/                   # Build, packaging, containerization
     ├── performance/
     ├── concurrency/
-    └── governance/
+    ├── governance/
+    ├── api/                     # API design and data contracts
+    ├── architecture/            # Project architecture and layout
+    ├── ecosystem/
+    ├── toolchain/
+    ├── data/                    # Data standards and persistence
+    ├── cicd/                    # CI/CD and deployment
+    ├── accessibility/           # a11y (when applicable)
+    └── messaging/               # Distributed messaging (when applicable)
 ```
 
 ## Precedence Rules

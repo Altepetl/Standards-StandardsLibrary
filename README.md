@@ -1,7 +1,7 @@
 ---
 title: StandardLibrary - README
 status: draft
-version: 0.0.4
+version: 0.0.5
 created: 2026-07-05
 updated: 2026-07-06
 ---
@@ -39,7 +39,7 @@ That's it. The command handles everything else:
 
 1. **If a previous run was interrupted**, it detects the pending points in `<language>/research-tracking.md` and **resumes exactly where it left off**.
 2. **If the language already exists** (fully researched), it shows the creation date and last review date of the existing research, and asks whether you want your AI agent to review and improve it (AI agents evolve fast — a re-review usually sharpens the existing research). If you decline, the command simply ends.
-3. **If the language does not exist**, it reads the research backbone ([`common/ConstituentElements.md`](common/ConstituentElements.md)), creates the tracking file, and dispatches **N parallel sub-agents** (2nd parameter, default 3) that research every section defined there and write one document per topic into the corresponding category folder.
+3. **If the language does not exist**, it reads the research backbone ([`common/ConstituentElements.md`](common/ConstituentElements.md)), creates the tracking file, and dispatches **N parallel sub-agents** (2nd parameter, default 3) that research the 26 sections defined there and write one document per topic into the corresponding category folder.
 
 ### The research tracking file
 
@@ -61,7 +61,7 @@ The command follows the detailed workflow defined in [`Instructions.md`](Instruc
 |------|------|
 | [`README.md`](README.md) | This file. Context for any AI agent or human consulting the repository. |
 | [`Instructions.md`](Instructions.md) | The step-by-step workflow the research agent must follow. Read by `/standard_research`. |
-| [`common/ConstituentElements.md`](common/ConstituentElements.md) | The research backbone: defines the 19 sections every standard must cover. It never leaves this repo — it is only the guide for elaborating a standard. |
+| [`common/ConstituentElements.md`](common/ConstituentElements.md) | The research backbone: defines the 26 sections every standard must cover. It never leaves this repo — it is only the guide for elaborating a standard. |
 | [`.claude/commands/standard_research.md`](.claude/commands/standard_research.md) | The `/standard_research` command definition. |
 
 ## Repository Structure
@@ -109,11 +109,11 @@ The command follows the detailed workflow defined in [`Instructions.md`](Instruc
 
 ## The Research Backbone: `common/ConstituentElements.md`
 
-The file [`common/ConstituentElements.md`](common/ConstituentElements.md) is the **cornerstone document** of this repository. It defines the constituent elements that any robust programming standard must include — 19 sections covering scope, naming, formatting, project layout, language rules, documentation, error handling, API design, security, dependencies, testing, version control, automation, build & packaging, performance, concurrency, governance, ecosystem conventions, and development toolchain — each with concrete examples.
+The file [`common/ConstituentElements.md`](common/ConstituentElements.md) is the **cornerstone document** of this repository. It defines the constituent elements that any robust programming standard must include — 26 sections covering scope, naming, formatting, project layout, language rules, documentation, error handling, API design, security, dependencies, testing, version control, automation, build & packaging, performance, concurrency, governance, ecosystem conventions, development toolchain, date/time/numeric formats, internationalization and localization, character encoding and Unicode, data standards and persistence, CI/CD and deployment, accessibility, and distributed messaging — each with concrete examples.
 
 **This file never goes anywhere.** It is not copied into language directories or client projects. It is exclusively the **guide for elaborating a standard**:
 
-1. **As the research checklist.** `/standard_research` iterates over each of its 19 sections and researches how that topic applies to the target language (e.g., for the *Naming Conventions* section in Python, research PEP 8 naming rules).
+1. **As the research checklist.** `/standard_research` iterates over each of its 26 sections and researches how that topic applies to the target language (e.g., for the *Naming Conventions* section in Python, research PEP 8 naming rules).
 2. **As the structure blueprint.** Each section maps to a **separate document** in the language's directory. For example, for Java:
    - Section 2 (Naming Conventions) → `java/common/naming-conventions.md`
    - Section 8 (API Design and Data Contracts) → `java/api/api-design-and-data-contracts.md`

@@ -1,14 +1,14 @@
 ---
 title: Programming Standard - Constituent Elements
 status: draft
-version: 0.2.0
+version: 0.3.0
 created: 2026-07-05
 updated: 2026-07-06
 ---
 
 # Programming Standard - Constituent Elements
 
-This document defines the **19 research areas** that any robust programming standard must cover. Its sole purpose is to serve as the **research backbone** for the `/standard_research` command — it guides *what* to investigate for a given language, not *what the rules should be*.
+This document defines the **26 research areas** that any robust programming standard must cover. Its sole purpose is to serve as the **research backbone** for the `/standard_research` command — it guides *what* to investigate for a given language, not *what the rules should be*.
 
 > **This document does not define standards.** Every section describes research objectives, not recommendations. The language-specific documents produced by `/standard_research` are where the actual standards live.
 
@@ -39,6 +39,13 @@ The section order does not imply priority. Each section becomes one independent 
 17. [Governance and Standard Updates](#17-governance-and-standard-updates)
 18. [Ecosystem Conventions](#18-ecosystem-conventions)
 19. [Development Toolchain](#19-development-toolchain)
+20. [Date, Time, Time Zones, and Numeric Formats](#20-date-time-time-zones-and-numeric-formats)
+21. [Internationalization and Localization](#21-internationalization-and-localization)
+22. [Character Encoding and Unicode](#22-character-encoding-and-unicode)
+23. [Data Standards and Persistence](#23-data-standards-and-persistence)
+24. [CI/CD and Deployment](#24-cicd-and-deployment)
+25. [Accessibility](#25-accessibility-a11y)
+26. [Distributed Messaging and Asynchronous Communication](#26-distributed-messaging-and-asynchronous-communication)
 
 ---
 
@@ -891,6 +898,332 @@ Research and document:
 - [ ] Official or community-standard language server identified.
 - [ ] Recommended IDE/editor support and plugins documented.
 - [ ] Official CLI tools bundled with the language documented.
+
+---
+
+## 20. Date, Time, Time Zones, and Numeric Formats
+
+Covers how the language and ecosystem handle dates, times, durations, time zones, and the formatting and parsing of numeric values. Mishandled time is one of the most common cross-language sources of bugs, so this area warrants dedicated attention.
+
+### Research Objectives
+
+Research and document:
+
+- The language's native date/time API and its recommended usage (e.g., `java.time`, Python `datetime`/zoneinfo, Rust `chrono`/`time`, JS `Date` vs `Temporal`, Go `time`).
+- Official or community recommendations on time-zone handling: storing in UTC, converting at boundaries, never doing naive arithmetic across zones.
+- The idiomatic distinction between instants, local dates/times, durations, and periods in this language — and which types represent each.
+- Date and time formatting and parsing conventions (ISO 8601, RFC 3339, locale-aware formats) and the libraries that enforce them.
+- Daylight Saving Time, leap seconds, and calendar edge cases — how the ecosystem recommends handling them.
+- Numeric formatting and parsing conventions: decimal separators, grouping, currency, significant digits, and the libraries for locale-aware formatting (e.g., ICU, `NumberFormat`, `format()`).
+- The pitfalls recognized in this ecosystem (e.g., mutable date objects, using system-local time on servers, trusting client clocks) and their idiomatic mitigations.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Store and transmit instants in UTC; convert to local zones only at presentation boundaries.
+- Use a duration type, not integer arithmetic on timestamps.
+- Parse ISO 8601 / RFC 3339 strings rather than hand-rolling formats.
+- Never store or compare naive local times when a time zone is involved.
+
+**Example (time handling — illustrative; research the idiomatic API for the target language):**
+
+```
+// ❌ Naive arithmetic across zones / mutable time:
+//   event.setTime(start.getHour() + 2)          // ignores DST, ignores zone
+//   storing "2026-03-15 14:00" without a zone    // ambiguous
+
+// ✅ Use the language's instant/duration types and UTC storage:
+//   now_utc = Instant.now()
+//   meeting = start.plus(Duration.ofHours(2))
+//   display = instant.atZone(userZone)
+// Research the equivalent API for the target language
+```
+
+### Research Completion Checklist
+
+- [ ] Native date/time API identified and its recommended usage documented.
+- [ ] Time-zone handling conventions documented (UTC storage, boundary conversion).
+- [ ] Instant vs. local vs. duration type distinctions documented.
+- [ ] Formatting/parsing conventions (ISO 8601, RFC 3339, locale-aware) documented.
+- [ ] Numeric formatting and parsing conventions documented.
+- [ ] Recognized time-handling pitfalls and their idiomatic mitigations documented.
+
+---
+
+## 21. Internationalization and Localization
+
+Covers how the ecosystem supports adapting software for different languages, regions, and cultural conventions (i18n and l10n). Relevance varies by language and project type (high for web and mobile; lower for systems tooling), but the conventions should be researched wherever they apply.
+
+### Research Objectives
+
+Research and document:
+
+- The canonical i18n/l10n libraries or frameworks for this ecosystem (e.g., ICU, gettext, `java.text`/`ResourceBundle`, JS `Intl`, `formatjs`, Rails I18n, Flutter `intl`).
+- Message extraction and externalization conventions: where strings live, file formats (`.po`/`.pot`, JSON catalogs, `.strings`, `.arb`), and tooling.
+- Pluralization and gender rules: how the ecosystem handles CLDR plural rules, ICU MessageFormat, and languages with complex plural/gender categories.
+- Locale-aware formatting of dates, numbers, and currencies, and the relationship to Section 20.
+- Right-to-left (RTL) and bidirectional text support conventions (relevant for UI ecosystems).
+- Character-set and encoding assumptions — cross-reference Section 22.
+- Translation workflow conventions recognized in this ecosystem (translation memory, pseudo-localization testing, locale fallback chains).
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Externalize all user-facing strings; never hard-code messages in source.
+- Use ICU MessageFormat (or equivalent) for plurals and gender, not string concatenation.
+- Define a locale fallback chain and test it.
+- Run pseudo-localization to catch hard-coded strings and layout breakage.
+
+**Example (pluralization — illustrative; research the idiomatic approach for the target ecosystem):**
+
+```
+// ❌ Concatenation fails plural/gender rules:
+//   "You have " + count + " items"
+
+// ✅ ICU MessageFormat style (verify what the target ecosystem uses):
+//   {count, plural,
+//     =0 {You have no items}
+//     one {You have one item}
+//     other {You have # items}}
+```
+
+### Research Completion Checklist
+
+- [ ] Canonical i18n/l10n library or framework identified.
+- [ ] Message externalization conventions and file formats documented.
+- [ ] Pluralization and gender handling conventions documented.
+- [ ] Locale-aware formatting conventions documented (cross-reference Section 20).
+- [ ] RTL/bidirectional support conventions documented (if applicable).
+- [ ] Translation and locale-fallback workflow conventions documented.
+
+---
+
+## 22. Character Encoding and Unicode
+
+Covers how the language and ecosystem handle character encoding, Unicode, and text processing. Universal across languages; a frequent source of bugs and security issues when mishandled.
+
+### Research Objectives
+
+Research and document:
+
+- The default source-file and string encoding for this language (e.g., UTF-8 source, UTF-16 internal strings, bytes vs. text distinction).
+- The language's string model: bytes vs. code points vs. grapheme clusters, and which the standard API exposes.
+- Unicode normalization conventions (NFC, NFD, NFKC, NFKD) and when they matter (storage, comparison, lookup).
+- Collation and locale-aware sorting conventions and the libraries that support them.
+- Case mapping, folding, and comparison conventions (Unicode-aware, not ASCII-only).
+- Handling of byte order marks (BOM), invalid byte sequences, and encoding conversion.
+- Regular expression support for Unicode (property escapes, `\p{...}`, grapheme-aware matching).
+- Recognized pitfalls (e.g., counting length in code units instead of graphemes, comparing strings without normalization, assuming ASCII) and their idiomatic mitigations.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Normalize to NFC before storing or comparing strings.
+- Iterate by grapheme cluster, not by byte or code unit, when counting "characters" a user sees.
+- Use Unicode-aware case folding, not ASCII `toLower`/`toUpper`, for case-insensitive comparison.
+- Explicitly declare encoding when reading/writing files and network data.
+
+**Example (string length — illustrative; research the idiomatic API for the target language):**
+
+```
+// The user-visible "length" of "é" and family-emoji can differ by model:
+//   bytes          → multiple
+//   code units     → one or more (UTF-16 surrogate pairs)
+//   code points    → one or more (combining marks, ZWJ sequences)
+//   grapheme users → one
+// Research which API the target language exposes and what the
+// community recommends for the task at hand.
+```
+
+### Research Completion Checklist
+
+- [ ] Default source and string encoding documented.
+- [ ] String model (bytes vs. code points vs. graphemes) documented.
+- [ ] Normalization conventions documented.
+- [ ] Collation and locale-aware sorting conventions documented.
+- [ ] Unicode-aware case mapping and comparison conventions documented.
+- [ ] Regex Unicode support documented.
+- [ ] Recognized encoding pitfalls and their idiomatic mitigations documented.
+
+---
+
+## 23. Data Standards and Persistence
+
+Covers conventions for storing, accessing, and evolving persistent data. Distinct from Section 15 (which addresses runtime performance anti-patterns like N+1) and Section 4 (which addresses where migrations live on disk). This section focuses on the data-layer standards themselves.
+
+### Research Objectives
+
+Research and document:
+
+- Naming conventions for database identifiers: tables, columns, schemas, indexes, constraints (cross-reference Section 2 — these may diverge from code-identifier conventions).
+- Data-type conventions: how to map language types to storage types, conventions for IDs (UUID vs. integer vs. ULID), timestamps, monetary values, and booleans.
+- Nullability, defaults, and constraints: community conventions for when columns should be nullable, defaults, uniqueness, and foreign-key policies.
+- Indexing conventions: when to index, naming indexes, composite vs. single-column, and the trade-offs the community recognizes.
+- Migration conventions: tooling, forward-only vs. up/down, expand/contract (parallel change) patterns, and how to ship zero-downtime schema changes.
+- Transaction and isolation-level conventions recognized in this ecosystem, and when each level is appropriate.
+- ORM vs. raw SQL conventions: where the ecosystem draws the line, and the idioms for query construction that avoid injection (cross-reference Section 9).
+- Schema-as-code, seed data, and test-data conventions.
+- NoSQL / document / key-value store conventions if they are idiomatic in this ecosystem.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Table names: plural snake_case (`users`, `order_items`) — research what this ecosystem actually uses.
+- Store timestamps in UTC with explicit time-zone-aware columns (cross-reference Section 20).
+- Expand/contract migrations: add nullable column → backfill → switch reads → drop old.
+- Prefer parameterized queries or the ORM's query builder over string concatenation.
+
+**Example (expand/contract migration — illustrative; research the idiomatic tooling):**
+
+```
+// Phase 1 (expand): add a nullable new_column; old code still works
+// Phase 2 (backfill): populate new_column for existing rows
+// Phase 3 (switch): deploy code that writes and reads new_column
+// Phase 4 (contract): make new_column non-null, remove the old column/path
+// Research the migration tool and conventions for the target ecosystem
+```
+
+### Research Completion Checklist
+
+- [ ] Database identifier naming conventions documented (and any divergence from code conventions noted).
+- [ ] Data-type and ID conventions documented.
+- [ ] Nullability, default, and constraint conventions documented.
+- [ ] Indexing conventions documented with trade-offs.
+- [ ] Migration tooling and zero-downtime migration patterns documented.
+- [ ] Transaction and isolation-level conventions documented.
+- [ ] ORM vs. raw SQL conventions and safe query construction documented.
+
+---
+
+## 24. CI/CD and Deployment
+
+Covers how code moves from a merged commit to a running system: continuous integration pipelines, environments, and deployment and release strategies. This is distinct from Section 12 (version-control workflow), Section 13 (quality gates), and Section 14 (producing the build artifact) — it covers what happens *after* the artifact exists.
+
+### Research Objectives
+
+Research and document:
+
+- The dominant CI platforms and pipeline conventions recognized in this ecosystem (e.g., GitHub Actions, GitLab CI, Jenkins, CircleCI) and what a conventional pipeline looks like.
+- Pipeline stage conventions: where lint, test, build, security scan, and publish run, and what constitutes a failure (cross-reference Sections 11 and 13).
+- Environment conventions: how this ecosystem separates dev/test/staging/prod, and configuration and secret handling across environments (cross-reference Section 9).
+- Deployment strategies recognized in this community: rolling, blue-green, canary, and feature-flag-driven releases, and their trade-offs.
+- Release and rollback conventions: artifact promotion, version tagging, database-change coordination (cross-reference Section 23), and how rollbacks are performed.
+- Feature-flag and dark-launch conventions and the dominant libraries.
+- Observability of the pipeline and deployment: health checks, smoke tests, and deployment markers in logs/metrics (cross-reference Section 7).
+- Infrastructure-as-code conventions when idiomatic to this ecosystem.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Conventional pipeline stages: lint → test → build → scan → publish; fail fast on lint.
+- Keep one artifact across environments; vary only configuration (12-factor — cross-reference Section 14).
+- Coordinate schema changes with deployments using expand/contract (cross-reference Section 23).
+- Ship behind a feature flag; roll forward to fix, roll back only when needed.
+
+**Example (pipeline stages — illustrative; research the idiomatic platform):**
+
+```
+// on pull request:       lint → unit test → build → integration test
+// on merge to main:      build → publish artifact → deploy to staging
+// on release tag:        promote artifact → deploy to prod (canary) → verify → ramp
+// Research the CI platform and conventions the target ecosystem uses
+```
+
+### Research Completion Checklist
+
+- [ ] Dominant CI platform(s) and conventional pipeline stages documented.
+- [ ] Environment separation and configuration/secret conventions documented.
+- [ ] Deployment strategies documented with trade-offs (do not prescribe one).
+- [ ] Release and rollback conventions documented.
+- [ ] Feature-flag / dark-launch conventions and dominant libraries documented.
+- [ ] Deployment health-check and smoke-test conventions documented.
+
+---
+
+## 25. Accessibility (a11y)
+
+Covers conventions for making software usable by people with disabilities. Relevance varies strongly by language and project type: high for web, mobile, and UI-heavy ecosystems (JavaScript/TypeScript, C#/.NET, Swift, Kotlin, Dart, Java UI); may be marked "not applicable" for systems or embedded languages.
+
+### Research Objectives
+
+Research and document:
+
+- The accessibility standards recognized as authoritative in this ecosystem (WCAG levels A/AA/AAA, WAI-ARIA, platform accessibility APIs).
+- Semantic markup and control conventions for the dominant UI frameworks in this ecosystem.
+- Keyboard navigation, focus management, and tab-order conventions.
+- Color-contrast, theming, and dark/light mode conventions and the contrast ratios the community targets.
+- Screen-reader conventions: labels, roles, live regions, and how the ecosystem tests with assistive technology.
+- Automated accessibility testing tooling recognized in this ecosystem (e.g., axe, Pa11y, Lighthouse, platform-native auditors).
+- Internationalization and RTL considerations specific to accessibility (cross-reference Section 21).
+- When this section does not apply to the target language — document that explicitly with rationale.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Use semantic elements/roles rather than rebuilding native controls from primitives.
+- Every interactive element must be reachable and operable by keyboard.
+- Provide accessible names for all controls (label, `aria-label`, or equivalent).
+- Run an automated audit in CI and pair it with manual screen-reader testing.
+
+**Example (accessible control — illustrative; research the idiom for the target UI framework):**
+
+```
+// ❌ Non-semantic, keyboard-inaccessible:
+//   <div onclick="submit()">Save</div>
+
+// ✅ Semantic, keyboard-operable, labeled:
+//   <button type="submit" aria-label="Save changes">Save</button>
+// Research the equivalent semantic control for the target UI framework
+```
+
+### Research Completion Checklist
+
+- [ ] Authoritative accessibility standards for this ecosystem documented (or section marked not applicable with rationale).
+- [ ] Semantic-control conventions for the dominant UI frameworks documented.
+- [ ] Keyboard and focus-management conventions documented.
+- [ ] Color-contrast and theming conventions documented.
+- [ ] Screen-reader testing conventions documented.
+- [ ] Automated accessibility testing tooling identified.
+
+---
+
+## 26. Distributed Messaging and Asynchronous Communication
+
+Covers conventions for communication *between* services and processes via messaging, event streams, and queues. This is distinct from Section 16 (concurrency *within* a single process) and Section 8 (synchronous API contracts). Primarily relevant for service-oriented, microservice, or event-driven ecosystems.
+
+### Research Objectives
+
+Research and document:
+
+- The dominant messaging patterns and transports recognized in this ecosystem (e.g., Kafka, RabbitMQ, NATS, SQS/SNS, AMQP, STOMP) and when each is conventional.
+- Message format and schema conventions: serialization formats (JSON, Avro, Protobuf), schema registries, and evolution rules.
+- Idempotency conventions for consumers: deduplication keys, exactly-once vs. at-least-once semantics, and how the ecosystem handles redelivery.
+- Ordering and partitioning conventions, and the trade-offs between throughput and ordering.
+- Reliability patterns recognized in this community: dead-letter queues, retries with backoff, circuit breakers, poison-message handling.
+- Outbox pattern, event sourcing, and transactional publishing conventions (cross-reference Section 23 for transactional consistency).
+- Async API contract tooling (AsyncAPI) and its relationship to Section 8's contract tooling.
+- When this section does not apply (e.g., a language used primarily for libraries or CLI tools) — document that explicitly.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Design consumers to be idempotent; assume at-least-once delivery.
+- Use a schema registry and define backward/forward-compatible evolution rules.
+- Route unprocessable messages to a dead-letter queue; never silently drop them.
+- Consider the transactional outbox pattern to avoid the dual-write problem.
+
+**Example (idempotent consumer — illustrative; research the idiomatic approach):**
+
+```
+// Consumer receives a message that may be redelivered:
+//   1. Compute a stable deduplication key (e.g., message id + event type)
+//   2. Check whether this key has already been processed
+//   3. If yes, acknowledge and skip; if no, process then record the key
+//   4. Acknowledge only after the work AND the deduplication record persist
+// Research the messaging library and idempotency conventions for the target ecosystem
+```
+
+### Research Completion Checklist
+
+- [ ] Dominant messaging patterns and transports documented with use cases (or section marked not applicable).
+- [ ] Message format and schema-evolution conventions documented.
+- [ ] Consumer idempotency and delivery-semantics conventions documented.
+- [ ] Ordering and partitioning conventions documented.
+- [ ] Reliability patterns (DLQ, retry/backoff, circuit breaker) documented.
+- [ ] Outbox / transactional-publish conventions documented.
 
 ---
 

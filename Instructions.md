@@ -1,7 +1,7 @@
 ---
 title: StandardLibrary - Research Instructions
 status: draft
-version: 0.2.0
+version: 0.3.0
 created: 2026-07-05
 updated: 2026-07-06
 ---
@@ -13,7 +13,7 @@ These are the instructions an AI agent must follow to research and compile the p
 ## Context You Must Understand First
 
 - **StandardLibrary is documentation only.** Your output is Markdown reference documents — never application code, tooling, or configuration.
-- **`common/ConstituentElements.md` is your research backbone.** It defines the 19 sections every programming standard must cover, with examples. That file never leaves this repository and is never copied into language directories; it is only your guide.
+- **`common/ConstituentElements.md` is your research backbone.** It defines the 26 sections every programming standard must cover, with examples. That file never leaves this repository and is never copied into language directories; it is only your guide.
 - **One file per section.** Each researched topic becomes its own document, so clients can later pick, override, or discard pieces individually.
 - **Specific overrides general.** Language-specific documents take precedence over the top-level `common/` documents; category documents inside a language take precedence over the language's own `common/`.
 - **This repo is a catalog, not a mandate.** Document the recognized standards and their alternatives (e.g., GitFlow vs. Trunk-Based); do not pick a winner. The selection happens later, in the independent **StandardBuilder** project.
@@ -97,7 +97,7 @@ This variant trades a small coordination overhead for guaranteed write consisten
 
 ### Step 2 — Read the research backbone
 
-Read `common/ConstituentElements.md` in full. Its 19 sections are your research checklist:
+Read `common/ConstituentElements.md` in full. Its 26 sections are your research checklist:
 
 1. Scope and Purpose
 2. Naming Conventions
@@ -118,10 +118,17 @@ Read `common/ConstituentElements.md` in full. Its 19 sections are your research 
 17. Governance and Standard Updates
 18. Ecosystem Conventions
 19. Development Toolchain
+20. Date, Time, Time Zones, and Numeric Formats
+21. Internationalization and Localization
+22. Character Encoding and Unicode
+23. Data Standards and Persistence
+24. CI/CD and Deployment
+25. Accessibility (a11y)
+26. Distributed Messaging and Asynchronous Communication
 
 ### Step 3 — Create the research tracking file
 
-Create `<language>/research-tracking.md` as specified in *The Research Tracking File* above, with **one row per section** of `ConstituentElements.md` (17 rows, plus one row for each extra language-specific category you decide to add). All rows start empty.
+Create `<language>/research-tracking.md` as specified in *The Research Tracking File* above, with **one row per section** of `ConstituentElements.md` (26 rows, plus one row for each extra language-specific category you decide to add). All rows start empty.
 
 ### Step 4 — Research each section in parallel with sub-agents
 
@@ -165,6 +172,13 @@ For **every** section, the researching sub-agent must:
    | 17. Governance and Standard Updates | `<language>/governance/governance-and-updates.md` |
    | 18. Ecosystem Conventions | `<language>/ecosystem/ecosystem-conventions.md` |
    | 19. Development Toolchain | `<language>/toolchain/development-toolchain.md` |
+   | 20. Date, Time, Time Zones, and Numeric Formats | `<language>/common/date-time-and-numeric-formats.md` |
+   | 21. Internationalization and Localization | `<language>/common/internationalization-and-localization.md` |
+   | 22. Character Encoding and Unicode | `<language>/common/character-encoding-and-unicode.md` |
+   | 23. Data Standards and Persistence | `<language>/data/data-standards-and-persistence.md` |
+   | 24. CI/CD and Deployment | `<language>/cicd/cicd-and-deployment.md` |
+   | 25. Accessibility (a11y) | `<language>/accessibility/accessibility.md` |
+   | 26. Distributed Messaging and Asynchronous Communication | `<language>/messaging/distributed-messaging.md` |
 
 2. Additional language-relevant categories are welcome when justified (e.g., `<language>/database/` for data-access standards, `<language>/frontend/` for UI-heavy languages). Each extra category also follows the one-file-per-section rule.
 3. **Every generated file must start with the tracking front matter:**
