@@ -1,7 +1,7 @@
 ---
 title: StandardLibrary - README
 status: draft
-version: 0.0.3
+version: 0.0.4
 created: 2026-07-05
 updated: 2026-07-06
 ---
@@ -61,7 +61,7 @@ The command follows the detailed workflow defined in [`Instructions.md`](Instruc
 |------|------|
 | [`README.md`](README.md) | This file. Context for any AI agent or human consulting the repository. |
 | [`Instructions.md`](Instructions.md) | The step-by-step workflow the research agent must follow. Read by `/standard_research`. |
-| [`common/ConstituentElements.md`](common/ConstituentElements.md) | The research backbone: defines the 17 sections every standard must cover. It never leaves this repo — it is only the guide for elaborating a standard. |
+| [`common/ConstituentElements.md`](common/ConstituentElements.md) | The research backbone: defines the 19 sections every standard must cover. It never leaves this repo — it is only the guide for elaborating a standard. |
 | [`.claude/commands/standard_research.md`](.claude/commands/standard_research.md) | The `/standard_research` command definition. |
 
 ## Repository Structure
@@ -109,16 +109,18 @@ The command follows the detailed workflow defined in [`Instructions.md`](Instruc
 
 ## The Research Backbone: `common/ConstituentElements.md`
 
-The file [`common/ConstituentElements.md`](common/ConstituentElements.md) is the **cornerstone document** of this repository. It defines the constituent elements that any robust programming standard must include — 17 sections covering scope, naming, formatting, project layout, language rules, documentation, error handling, API design, security, dependencies, testing, version control, automation, build & packaging, performance, concurrency, and governance — each with concrete examples.
+The file [`common/ConstituentElements.md`](common/ConstituentElements.md) is the **cornerstone document** of this repository. It defines the constituent elements that any robust programming standard must include — 19 sections covering scope, naming, formatting, project layout, language rules, documentation, error handling, API design, security, dependencies, testing, version control, automation, build & packaging, performance, concurrency, governance, ecosystem conventions, and development toolchain — each with concrete examples.
 
 **This file never goes anywhere.** It is not copied into language directories or client projects. It is exclusively the **guide for elaborating a standard**:
 
-1. **As the research checklist.** `/standard_research` iterates over each of its 17 sections and researches how that topic applies to the target language (e.g., for the *Naming Conventions* section in Python, research PEP 8 naming rules).
+1. **As the research checklist.** `/standard_research` iterates over each of its 19 sections and researches how that topic applies to the target language (e.g., for the *Naming Conventions* section in Python, research PEP 8 naming rules).
 2. **As the structure blueprint.** Each section maps to a **separate document** in the language's directory. For example, for Java:
    - Section 2 (Naming Conventions) → `java/common/naming-conventions.md`
    - Section 8 (API Design and Data Contracts) → `java/api/api-design-and-data-contracts.md`
    - Section 9 (Security and Privacy) → `java/security/security-and-privacy.md`
    - Section 11 (Testing) → `java/testing/testing-and-quality.md`
+   - Section 18 (Ecosystem Conventions) → `java/ecosystem/ecosystem-conventions.md`
+   - Section 19 (Development Toolchain) → `java/toolchain/development-toolchain.md`
 3. **As the completeness validator.** A language's standard set is complete only when every applicable section has a corresponding language-specific document (or an explicit note stating why a section does not apply, e.g., manual memory management in garbage-collected languages).
 
 ## Precedence Rules

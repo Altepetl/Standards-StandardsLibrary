@@ -1,7 +1,7 @@
 ---
 title: StandardLibrary - Research Instructions
 status: draft
-version: 0.1.1
+version: 0.2.0
 created: 2026-07-05
 updated: 2026-07-06
 ---
@@ -13,7 +13,7 @@ These are the instructions an AI agent must follow to research and compile the p
 ## Context You Must Understand First
 
 - **StandardLibrary is documentation only.** Your output is Markdown reference documents — never application code, tooling, or configuration.
-- **`common/ConstituentElements.md` is your research backbone.** It defines the 17 sections every programming standard must cover, with examples. That file never leaves this repository and is never copied into language directories; it is only your guide.
+- **`common/ConstituentElements.md` is your research backbone.** It defines the 19 sections every programming standard must cover, with examples. That file never leaves this repository and is never copied into language directories; it is only your guide.
 - **One file per section.** Each researched topic becomes its own document, so clients can later pick, override, or discard pieces individually.
 - **Specific overrides general.** Language-specific documents take precedence over the top-level `common/` documents; category documents inside a language take precedence over the language's own `common/`.
 - **This repo is a catalog, not a mandate.** Document the recognized standards and their alternatives (e.g., GitFlow vs. Trunk-Based); do not pick a winner. The selection happens later, in the independent **StandardBuilder** project.
@@ -97,7 +97,7 @@ This variant trades a small coordination overhead for guaranteed write consisten
 
 ### Step 2 — Read the research backbone
 
-Read `common/ConstituentElements.md` in full. Its 17 sections are your research checklist:
+Read `common/ConstituentElements.md` in full. Its 19 sections are your research checklist:
 
 1. Scope and Purpose
 2. Naming Conventions
@@ -116,6 +116,8 @@ Read `common/ConstituentElements.md` in full. Its 17 sections are your research 
 15. Performance and Resource Efficiency
 16. Concurrency and Thread Safety
 17. Governance and Standard Updates
+18. Ecosystem Conventions
+19. Development Toolchain
 
 ### Step 3 — Create the research tracking file
 
@@ -161,6 +163,8 @@ For **every** section, the researching sub-agent must:
    | 15. Performance and Resource Efficiency | `<language>/performance/performance-and-resources.md` |
    | 16. Concurrency and Thread Safety | `<language>/concurrency/concurrency-and-thread-safety.md` |
    | 17. Governance and Standard Updates | `<language>/governance/governance-and-updates.md` |
+   | 18. Ecosystem Conventions | `<language>/ecosystem/ecosystem-conventions.md` |
+   | 19. Development Toolchain | `<language>/toolchain/development-toolchain.md` |
 
 2. Additional language-relevant categories are welcome when justified (e.g., `<language>/database/` for data-access standards, `<language>/frontend/` for UI-heavy languages). Each extra category also follows the one-file-per-section rule.
 3. **Every generated file must start with the tracking front matter:**

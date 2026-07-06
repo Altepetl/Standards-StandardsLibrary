@@ -1,18 +1,20 @@
 ---
 title: Programming Standard - Constituent Elements
 status: draft
-version: 0.1.0
+version: 0.2.0
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-06
 ---
 
 # Programming Standard - Constituent Elements
 
-This document describes the fundamental elements that any robust programming standard must include. Its purpose is to serve as a base template for defining the rules, best practices, and processes that will ensure code quality, security, and maintainability across any software project.
+This document defines the **19 research areas** that any robust programming standard must cover. Its sole purpose is to serve as the **research backbone** for the `/standard_research` command — it guides *what* to investigate for a given language, not *what the rules should be*.
 
-It is the **research backbone** of this repository: when building the standards for a specific language, each section below should be researched for that language and materialized as a **separate document** (one file per section), following the repository's structure rules.
+> **This document does not define standards.** Every section describes research objectives, not recommendations. The language-specific documents produced by `/standard_research` are where the actual standards live.
 
-> **Note:** This file never leaves this repository. It is not copied into language directories or client projects — it is exclusively the guide used by the `/standard_research` command to elaborate a standard.
+> **This file never leaves this repository.** It is not copied into language directories. It is exclusively the guide used by `/standard_research`.
+
+The section order does not imply priority. Each section becomes one independent file in the language directory.
 
 ---
 
@@ -35,581 +37,861 @@ It is the **research backbone** of this repository: when building the standards 
 15. [Performance and Resource Efficiency](#15-performance-and-resource-efficiency)
 16. [Concurrency and Thread Safety](#16-concurrency-and-thread-safety)
 17. [Governance and Standard Updates](#17-governance-and-standard-updates)
+18. [Ecosystem Conventions](#18-ecosystem-conventions)
+19. [Development Toolchain](#19-development-toolchain)
 
 ---
 
 ## 1. Scope and Purpose
 
-Defines the "what", "why", and "for whom" of the standard.
+Defines the "what", "why", and "for whom" of a standard. Every standard produced from this library should document its own scope so consumers know exactly what it covers.
 
-- **Primary objective:** Unify criteria to reduce technical debt and facilitate teamwork.
-- **Applicability:** Specify which languages, frameworks, modules, or architectural layers it applies to (e.g., back-end, front-end, scripts).
-- **Lifecycle:** Indicate whether it applies only to new code, refactoring efforts, or also to legacy code maintenance.
-- **External references:** Mention any base standards or guides being followed (e.g., MISRA, CERT, PSR-12, Google Style Guides).
+### Research Objectives
 
-**Example (scope declaration):**
+Research and document:
 
-```markdown
-## Scope
-- Applies to: all back-end services written in Java 17+ using Spring Boot.
-- Does NOT apply to: legacy modules in `legacy/` (frozen, maintenance only).
-- New code: mandatory. Refactored code: mandatory. Untouched legacy code: exempt.
-- Based on: Google Java Style Guide + OWASP Secure Coding Practices.
-```
+- What the official language or ecosystem documentation says about the intended use cases of the language.
+- Whether there is an official or widely accepted definition of scope for standards in this ecosystem (e.g., PSR for PHP, PEP for Python).
+- How existing community style guides define their own applicability (which layers, which project types, which lifecycle phases).
+- Whether the language has a governance body that publishes scope definitions (e.g., TC39 for JavaScript, JCP for Java).
+- How different communities (enterprise, open-source, embedded, academia) interpret and limit the scope of their standards.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Primary objective of the standard: unify criteria to reduce technical debt and facilitate teamwork.
+- Applicability dimensions: language version, frameworks, architectural layers, project types (library vs. application vs. script).
+- Lifecycle applicability: new code only, refactoring, legacy maintenance.
+- External reference standards (e.g., MISRA, CERT, PSR-12, Google Style Guides).
+
+### Research Completion Checklist
+
+- [ ] Official language documentation reviewed for stated scope and intended use cases.
+- [ ] Existing community-recognized style guides identified and their scope sections documented.
+- [ ] Governance body and its publications identified (if any).
+- [ ] Applicability dimensions (layers, project types, lifecycle phases) documented for this language's ecosystem.
 
 ---
 
 ## 2. Naming Conventions
 
-Consistent naming is key to readability.
+Covers the rules by which identifiers — classes, functions, variables, files, and other named elements — are written in the language.
 
-- **Classes and Types:** Use `PascalCase` (e.g., `UserService`).
-- **Methods and Functions:** Use `camelCase` (e.g., `fetchData`).
-- **Variables and Parameters:** Use `camelCase` or `snake_case` (define based on the language; e.g., `totalPrice`).
-- **Constants and Enums:** Use `UPPERCASE_WITH_UNDERSCORES` (e.g., `MAX_RETRIES`).
-- **Interfaces:** Prefix `I` (e.g., `IRepository`) or suffix `able` (e.g., `Cloneable`) according to language standards.
-- **Files:** Rules for naming files (e.g., `class.extension`, `component.tsx`).
-- **Private members:** Use an underscore `_` prefix (e.g., `_internalState`) if the language allows it.
-- **Booleans:** Prefix with `is`, `has`, `can`, or `should` (e.g., `isActive`, `hasPermission`).
-- **Semantic names:** Names must reveal intent; avoid abbreviations and single letters outside short loop indexes.
+### Research Objectives
 
-**Example (good vs. bad):**
+Research and document:
 
-```java
-// ❌ Bad
-int d;                        // meaningless
-public class usr_svc { }      // wrong case, abbreviated
-boolean flag;                 // what flag?
+- Official language specification rules for identifiers (legal characters, length limits, reserved words).
+- Official style guide naming recommendations (if one exists).
+- Community-adopted conventions for each identifier category: classes/types, functions/methods, variables/parameters, constants/enumerations, interfaces/traits/protocols, files and modules, private/internal members.
+- Whether the language is case-sensitive and how that affects conventions.
+- Naming conventions for booleans, predicates, and event handlers.
+- Conventions for prefixes, suffixes, and namespaces.
+- Cases where the community is split between multiple recognized conventions — document all of them with their trade-offs.
 
-// ✅ Good
-int daysSinceLastLogin;
-public class UserService { }
-boolean isEmailVerified;
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- `PascalCase` for classes and types (e.g., `UserService`).
+- `camelCase` or `snake_case` for functions and variables.
+- `UPPERCASE_WITH_UNDERSCORES` for constants.
+- `I`-prefix or `-able`-suffix for interfaces.
+- `_`-prefix for private members.
+- `is`/`has`/`can`/`should` prefix for booleans.
+
+**Example (good vs. bad — illustrative only; research what applies to the target language):**
+
 ```
+// Meaningless name vs. intent-revealing name
+int d;                   →   int daysSinceLastLogin;
+boolean flag;            →   boolean isEmailVerified;
+public class usr_svc { } →   public class UserService { }
+```
+
+### Research Completion Checklist
+
+- [ ] Official language spec rules for identifiers documented.
+- [ ] Official or widely adopted style guide naming rules documented for each identifier category.
+- [ ] Community-split conventions documented side by side with trade-offs.
+- [ ] Boolean and predicate naming conventions documented.
+- [ ] File and module naming conventions documented.
 
 ---
 
 ## 3. Formatting and Structure Style
 
-Aesthetic rules and code ordering.
+Covers the visual presentation of code: indentation, line length, brace placement, spacing, and the internal ordering of code elements within a file.
 
-- **Indentation:** Define the use of **Spaces** or **Tabs**, and the exact number (e.g., 2 or 4 spaces).
-- **Maximum line length:** Character limit per line (e.g., 80, 100, or 120).
-- **Braces:** Specify the style (e.g., **Allman** - brace on a new line, or **K&R** - brace on the same line).
-- **Spacing:** Rules about spaces after `if`, `for`, `while`, and around binary operators.
-- **Import/include order:** Group by type (native libraries, external, internal) and in alphabetical order.
-- **File structure:** Define the internal order of a class (e.g., static attributes, instance attributes, constructor, public methods, private methods).
+### Research Objectives
 
-**Example (brace styles):**
+Research and document:
 
-```c
-// K&R style (brace on the same line)
-if (isValid) {
-    process(data);
-}
+- Official style guide recommendations for indentation (tabs vs. spaces, width).
+- Maximum line length recommendations and whether they differ by context (code vs. comments vs. strings).
+- Brace placement styles recognized in the ecosystem (e.g., K&R, Allman, Stroustrup) and which is conventional.
+- Spacing rules around operators, control structures, and function calls.
+- Import/include/use statement ordering conventions.
+- Canonical internal ordering of elements within a file or class (fields, constructors, methods, etc.).
+- Whether the language has an official formatter that enforces these rules automatically.
+- Cases where the community is split — document all recognized approaches.
 
-// Allman style (brace on a new line)
-if (isValid)
-{
-    process(data);
-}
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Indentation: spaces vs. tabs, 2 vs. 4 width.
+- Maximum line length: 80, 100, or 120 characters.
+- Brace styles: K&R (same line) vs. Allman (new line).
+- Import grouping: standard library → external → internal, alphabetically within groups.
+- File internal order: static fields → instance fields → constructors → public methods → private methods.
+
+**Example (brace styles — illustrative only):**
+
+```
+// K&R style              // Allman style
+if (isValid) {            if (isValid)
+    process();            {
+}                             process();
+                          }
 ```
 
-**Example (import ordering):**
+### Research Completion Checklist
 
-```python
-# 1. Standard library
-import os
-import sys
-
-# 2. Third-party packages
-import requests
-
-# 3. Internal modules
-from app.services import user_service
-```
+- [ ] Official style guide formatting rules documented (or noted as absent).
+- [ ] Official formatter identified (if one exists) and its default behavior documented.
+- [ ] Indentation, line length, and brace conventions documented with recognized alternatives if split.
+- [ ] Import/include ordering conventions documented.
+- [ ] Internal file/class ordering conventions documented.
 
 ---
 
 ## 4. Project Architecture and Directory Layout
 
-Conventions about the architecture of the repository itself — where each piece of code lives. (Section 3 covers the internal structure of a file; this section covers the structure of the project.)
+Covers the structure of the repository itself — where each piece of code lives and why — as distinct from the internal structure of a single file (which is Section 3).
 
-- **Canonical root layout:** Define the standard top-level folders and their purpose (e.g., `src/`, `tests/`, `docs/`, `scripts/`, `config/`).
-- **Ecosystem idioms:** Follow the recognized layout of the language's ecosystem (e.g., `cmd/`, `internal/`, `pkg/` in Go; src-layout in Python; Maven/Gradle layout in Java; `src/` + `dist/` in Node.js).
-- **Layer boundaries:** Define where each architectural layer lives (domain, application, infrastructure, presentation) and the allowed **dependency direction** between them (e.g., domain must not import infrastructure).
-- **Package organization strategy:** Choose and enforce one approach — *by feature* (`orders/`, `users/`) or *by layer* (`controllers/`, `services/`, `repositories/`) — and prohibit mixing them.
-- **Test placement:** Decide between a mirrored test tree (`tests/` reflecting `src/`) or colocated tests (`file.test.ts` next to `file.ts`).
-- **Generated artifacts:** Build outputs, caches, and generated code must never be committed; define the standard ignore rules (`.gitignore` baseline).
-- **Configuration and assets:** Standard location for configuration files, static assets, migrations, and infrastructure definitions.
+### Research Objectives
 
-**Example (canonical layout, Go):**
+Research and document:
 
-```text
-myservice/
-├── cmd/myservice/main.go      # entry points only, no business logic
-├── internal/                  # private application code
-│   ├── domain/                # entities and business rules (imports nothing below)
-│   ├── application/           # use cases
-│   └── infrastructure/        # DB, HTTP clients, adapters
-├── pkg/                       # public reusable libraries (only if truly reusable)
-├── configs/
+- The canonical project layout defined or recommended by the language's official documentation or tooling.
+- The directory conventions of the dominant build tools or frameworks in the ecosystem (e.g., Maven layout for Java, src-layout for Python, `cmd/internal/pkg` for Go, `src/dist` for Node.js).
+- Widely used architectural patterns in this ecosystem and the directory structures that accompany them. Do not assume any single architecture (such as Clean Architecture, Hexagonal, or MVC) is the default — document what the ecosystem actually uses.
+- Framework-specific project layouts for the most widely adopted frameworks (e.g., Spring Boot, Django, Laravel, Rails, NestJS, Phoenix, ASP.NET).
+- Where to place: source code, tests, generated files, configuration, scripts, documentation, assets, database migrations.
+- Package/module organization strategies (by feature, by layer, by domain, etc.) and their trade-offs.
+- What should never be committed (build outputs, caches, secrets, generated code) and standard ignore rules.
+- Community-recognized monorepo patterns if applicable.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Canonical root folders: `src/`, `tests/`, `docs/`, `scripts/`, `config/`.
+- Ecosystem-specific idioms: `cmd/`, `internal/`, `pkg/` in Go; Maven's `src/main/java` and `src/test/java`; Python src-layout.
+- Organization strategy: by feature (`orders/`, `users/`) vs. by layer (`controllers/`, `services/`, `repositories/`) — document trade-offs, do not prescribe.
+- Common architectural patterns (MVC, layered, hexagonal, feature-based, etc.) as ecosystem examples — research which ones are idiomatic, not which one is correct.
+
+**Example (illustrative layout for one ecosystem — research the equivalent for the target language):**
+
+```
+myservice/            ← research what the ecosystem names this
+├── src/              ← or cmd/, lib/, app/ — depends on language
+├── tests/            ← or spec/, test/ — research the convention
+├── docs/
 ├── scripts/
-└── go.mod
+└── <build-file>      ← pom.xml, go.mod, package.json, etc.
 ```
 
-**Example (dependency direction rule):**
+### Research Completion Checklist
 
-```text
-✅ Allowed:    infrastructure → application → domain
-❌ Forbidden:  domain → infrastructure (the core must not know the adapters)
-```
-
-**Example (by-feature vs. by-layer — pick ONE):**
-
-```text
-By feature (recommended for large domains):     By layer:
-src/orders/{controller,service,repository}      src/controllers/orders...
-src/users/{controller,service,repository}       src/services/orders...
-```
+- [ ] Official or tooling-defined canonical layout documented.
+- [ ] At least the two most popular frameworks' project layouts documented.
+- [ ] Module/package organization strategies documented with trade-offs.
+- [ ] Test placement conventions documented (colocated vs. mirrored tree).
+- [ ] Standard ignore rules documented.
+- [ ] No single architectural style presented as default — alternatives covered.
 
 ---
 
 ## 5. Language Rules and Best Practices
 
-Restrictions and recommendations on language usage.
+Covers language-specific rules about how to use the language itself: which features to use, which to avoid, and what design principles are idiomatic.
 
-- **Typing:** Specify whether strong/strict typing is required and when type inference is allowed.
-- **Prohibited features:** List outdated, dangerous, or confusing constructs (e.g., `goto`, `eval`, `global` in PHP).
-- **Memory management:** Guidelines to avoid leaks (in languages like C/C++).
-- **Maximum complexity:** Limits on lines per function/method (e.g., max 30 lines), cyclomatic complexity (e.g., max 10), or nesting depth (e.g., max 4 levels of `if/else`).
-- **Design principles:** Mandate the application of **DRY** (Don't Repeat Yourself), **KISS** (Keep It Simple, Stupid), and **SOLID** principles where possible.
-- **Use of patterns:** Recommend specific design patterns for common problems (e.g., Factory, Repository, Singleton).
-- **Immutability:** Prefer immutable data structures and `final`/`const`/`readonly` declarations where the language supports them.
+### Research Objectives
 
-**Example (reducing nesting with guard clauses):**
+Research and document:
 
-```javascript
-// ❌ Bad: deep nesting
-function processOrder(order) {
-  if (order) {
-    if (order.isPaid) {
-      if (order.items.length > 0) {
-        ship(order);
-      }
-    }
-  }
+- The language's typing model and official or community recommendations regarding type usage (strong/weak, static/dynamic, type inference, generics, type hints).
+- Language features that are officially deprecated, discouraged, or known to be dangerous — and why.
+- Official or community-recognized limits on complexity (function length, nesting depth, cyclomatic complexity).
+- Design principles that are idiomatic to this language and ecosystem (these vary by language — do not assume SOLID, DRY, or KISS apply universally or in the same form).
+- Immutability conventions and how the language supports or encourages them.
+- Memory management model and associated best practices (relevant in languages like C, C++, Rust).
+- Idiomatic error handling model (exceptions, return values, result types, option types — research what is conventional).
+- Design patterns that are widely used and recognized in this ecosystem, and those that are considered anti-patterns.
+- Community-recognized code smells specific to this language.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Prohibited constructs: `goto`, `eval`, `global` — depends on the language.
+- Complexity limits: max lines per function, nesting depth — research what the community recognizes.
+- Design principles: DRY, KISS, SOLID — research whether and how they manifest in this language.
+- Guard clauses, early returns — research whether they are idiomatic.
+
+**Example (illustrative — verify idiom for the target language):**
+
+```
+// Reducing nesting with early returns — illustrative pattern
+// Research whether this is idiomatic in the target language
+
+// Deep nesting approach:
+function process(order) {
+  if (order) { if (order.isPaid) { if (order.items > 0) { ship(order); } } }
 }
 
-// ✅ Good: guard clauses (fail fast)
-function processOrder(order) {
+// Early return approach:
+function process(order) {
   if (!order) return;
   if (!order.isPaid) return;
-  if (order.items.length === 0) return;
+  if (order.items === 0) return;
   ship(order);
 }
 ```
+
+### Research Completion Checklist
+
+- [ ] Language typing model and type usage recommendations documented.
+- [ ] Officially deprecated or discouraged language features listed with rationale.
+- [ ] Community-recognized complexity limits documented.
+- [ ] Idiomatic design principles for this language documented (not assumed from other languages).
+- [ ] Memory management best practices documented (if applicable).
+- [ ] Common design patterns and anti-patterns specific to this ecosystem documented.
 
 ---
 
 ## 6. Documentation and Comments
 
-Guidelines for writing useful documentation that complements self-documenting code.
+Covers how to document code through inline comments, block comments, and structured documentation formats.
 
-- **DocBlocks / PHPDoc / JSDoc:** Mandatory template for classes, methods, and functions (including `@param`, `@return`, `@throws`).
-- **Inline comments:** When to use them (explain the *why*, not the *what*).
-- **Block comments:** Use to explain complex algorithms or critical business logic.
-- **Markers:** Establish rules for `TODO` and `FIXME` (e.g., include the author's name and date, or a ticket reference).
-- **README:** Require each module or component to have an entry file describing its purpose.
+### Research Objectives
 
-**Example (DocBlock template):**
+Research and document:
 
-```java
+- The official or community-standard documentation format for this language (e.g., JSDoc, Javadoc, Docstrings/Sphinx, Rustdoc, Godoc, XML docs for C#).
+- Required and optional tags in the documentation format (e.g., `@param`, `@return`, `@throws`, `@example`).
+- Community conventions for when to write inline comments and what they should express.
+- Conventions for block comments and their appropriate use cases.
+- Conventions for marker comments (`TODO`, `FIXME`, `HACK`, `NOTE`) including whether they should reference tickets, authors, or dates.
+- Whether the ecosystem has tooling that generates documentation from code comments (identify it).
+- README conventions for modules, packages, and components.
+- Whether the ecosystem favors "self-documenting code" over comments and how that manifests.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- DocBlock template structure with mandatory tags.
+- Inline comments: explain *why*, not *what*.
+- TODO markers with author and ticket reference.
+- Per-module README requirement.
+
+**Example (DocBlock template — research the equivalent format for the target language):**
+
+```
 /**
- * Calculates the final price applying taxes and discounts.
+ * Brief description of what this does.
  *
- * @param basePrice   the price before adjustments; must be >= 0
- * @param discountPct discount percentage between 0 and 100
- * @return the final price, never negative
- * @throws IllegalArgumentException if basePrice is negative
+ * @param paramName   description; constraints (e.g., must be >= 0)
+ * @return            description of the return value
+ * @throws ExcType    when this exception is thrown
  */
-public BigDecimal calculateFinalPrice(BigDecimal basePrice, int discountPct) { ... }
 ```
 
-**Example (comment the *why*, not the *what*):**
+**Example (comment intent — illustrative):**
 
-```python
-# ❌ Bad: repeats what the code says
-counter += 1  # increment counter
-
-# ✅ Good: explains the reason
-# The external API is 1-indexed, so we offset before sending.
-counter += 1
+```
+// ❌ Repeats the code:    counter += 1;  // increment counter
+// ✅ Explains the why:    counter += 1;  // API is 1-indexed; offset before sending
 ```
 
-**Example (TODO marker rule):**
+### Research Completion Checklist
 
-```java
-// TODO(jperez, 2026-07-05, JIRA-1234): remove this fallback once API v2 is live
-```
+- [ ] Official or community-standard documentation format identified and its required tags documented.
+- [ ] Documentation generation tooling identified.
+- [ ] Inline and block comment conventions documented.
+- [ ] Marker comment conventions documented.
+- [ ] README conventions for modules/packages documented.
 
 ---
 
 ## 7. Error Handling, Exceptions, and Logging
 
-Policies for managing anomalous situations.
+Covers how the language and ecosystem handle errors, anomalous situations, and observability through logging, metrics, and tracing.
 
-- **Exception hierarchy:** Define custom exceptions (e.g., `DomainException`, `InfrastructureException`).
-- **Recovery policy:** Decide between *Fail-Fast* or *Resilience* (retries, circuit breakers).
-- **Input validation:** Mandate validation of data coming from users, APIs, or databases before processing.
-- **Logging:** Establish log levels (`DEBUG`, `INFO`, `WARN`, `ERROR`) and what information should be logged at each level (e.g., request traces, response times).
-- **Global error handling:** Implement a centralized handler to catch unhandled exceptions and return standardized responses (for APIs).
-- **Never swallow exceptions:** Prohibit empty `catch` blocks; every caught exception must be handled, logged, or rethrown.
-- **Observability:** Complement logs with metrics and distributed tracing when the architecture requires it (e.g., correlation IDs across services).
+### Research Objectives
 
-**Example (empty catch prohibition):**
+**Error handling:**
 
-```java
-// ❌ Bad: the error disappears silently
-try {
-    repository.save(user);
-} catch (Exception e) { }
+- The language's fundamental error model (exceptions, error return values, result/option types, panic/recover — research what is native and idiomatic).
+- Official or community recommendations on exception hierarchy and custom exception design.
+- Conventions for fail-fast vs. resilience/retry patterns and when each is appropriate.
+- Recommendations for input validation before processing.
+- Whether swallowing errors silently is explicitly discouraged, and how.
 
-// ✅ Good: contextualize and rethrow as a domain exception
-try {
-    repository.save(user);
-} catch (SQLException e) {
-    log.error("Failed to persist user {}", user.getId(), e);
-    throw new InfrastructureException("User persistence failed", e);
-}
-```
+**Logging:**
 
-**Example (log level usage):**
+- The standard logging library or framework for this language/ecosystem.
+- Recognized log level semantics (`DEBUG`, `INFO`, `WARN`, `ERROR`, and any others) and what belongs at each level.
+- Structured logging conventions (JSON logs, key-value pairs) vs. plaintext.
+- What must never appear in logs (passwords, tokens, PII) and how the ecosystem handles log sanitization.
 
-| Level | Use for | Example |
-|-------|---------|---------|
-| `DEBUG` | Diagnostic detail, disabled in production | `"Cache miss for key user:42"` |
-| `INFO`  | Normal business events | `"Order 1234 created"` |
-| `WARN`  | Recoverable anomalies | `"Retry 2/3 calling payment API"` |
-| `ERROR` | Failures requiring attention | `"Payment API unreachable after 3 retries"` |
+**Observability (beyond logging):**
+
+- Structured logging standards and tooling in this ecosystem.
+- Metrics conventions (counters, gauges, histograms) and the dominant library or protocol (e.g., Prometheus, StatsD, OpenTelemetry).
+- Distributed tracing conventions and the dominant standard (e.g., OpenTelemetry, Jaeger, Zipkin).
+- Correlation ID / request ID conventions.
+- Health check, readiness probe, and liveness probe conventions (especially for services).
+- Whether the ecosystem has an official or de facto telemetry standard.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Empty catch block prohibition.
+- Centralized global error handler for APIs.
+- Log level table: DEBUG for diagnostics, INFO for business events, WARN for recoverable anomalies, ERROR for failures.
+
+**Example (log level semantics — illustrative; verify for the target ecosystem):**
+
+| Level   | Purpose                          | Example                                  |
+|---------|----------------------------------|------------------------------------------|
+| `DEBUG` | Diagnostic detail, dev/test only | `"Cache miss for key user:42"`           |
+| `INFO`  | Normal business events           | `"Order 1234 created"`                   |
+| `WARN`  | Recoverable anomalies            | `"Retry 2/3 calling payment API"`        |
+| `ERROR` | Failures requiring attention     | `"Payment API unreachable after 3 retries"` |
+
+### Research Completion Checklist
+
+- [ ] Language's native error model documented (exceptions, result types, error values, etc.).
+- [ ] Standard logging library/framework identified and log level semantics documented.
+- [ ] Structured logging conventions documented.
+- [ ] PII and secret sanitization in logs documented.
+- [ ] Dominant metrics and tracing standards/libraries for this ecosystem identified.
+- [ ] Correlation ID and health check conventions documented (for service-oriented use cases).
 
 ---
 
 ## 8. API Design and Data Contracts
 
-Rules about how data is exposed to the outside world. (Section 7 covers *internal* error handling; this section covers the *external* contract.) Essential when the language is used to build web services.
+Covers how data and capabilities are exposed externally. This section addresses the *external contract*, as distinct from Section 7 which covers *internal* error handling. Primarily relevant when the language is used to build web services or libraries consumed by other systems.
 
-- **Resource naming:** Use plural nouns and kebab-case in URLs; no verbs in paths (the HTTP method is the verb).
-- **Payload field casing:** Choose **one** convention for JSON/response bodies (`camelCase` or `snake_case`) and enforce it across all services, regardless of the internal language convention.
-- **Versioning strategy:** Define how APIs are versioned (URI: `/api/v1/...`, or headers) and the deprecation policy for old versions.
-- **HTTP status codes:** Standardize which codes are returned for each situation (e.g., `400` validation, `401` unauthenticated, `403` unauthorized, `404` not found, `409` conflict, `422` semantic error, `500` unexpected).
-- **Standard error body:** Define a single error response format for all services (e.g., RFC 7807 `application/problem+json`), including a machine-readable error code and a correlation ID.
-- **Pagination, filtering, and sorting:** Fixed conventions (e.g., `?page=`, `?size=`, `?sort=field,desc`) and a mandatory maximum page size.
-- **Contract-first:** Require the contract (OpenAPI, Protobuf, GraphQL schema) to be the source of truth, versioned in the repository.
-- **Backward compatibility:** Only additive changes within a version; removing or renaming a field requires a new version.
-- **Idempotency:** Require idempotency keys for operations that clients may retry (e.g., payments).
+### Research Objectives
 
-**Example (endpoint naming):**
+Research and document:
 
-```text
-❌ Bad:  POST /api/createUser          GET /api/get_user_orders?id=42
-✅ Good: POST /api/v1/users            GET /api/v1/users/42/orders
-```
+- Official or community-recognized REST API design conventions for this ecosystem (resource naming, HTTP verb usage, URL structure).
+- JSON payload field naming conventions (`camelCase`, `snake_case`, `PascalCase`) — note that this may differ from the internal language convention.
+- API versioning strategies recognized in this ecosystem (URI versioning, header versioning, media type versioning) and their trade-offs.
+- Standard HTTP status code semantics as applied in this ecosystem.
+- Community-standard error response body format (e.g., RFC 7807 Problem Details, or ecosystem-specific formats).
+- Pagination, filtering, and sorting conventions.
+- Contract-first design tools and formats used in this ecosystem (OpenAPI/Swagger, Protobuf, GraphQL, AsyncAPI).
+- Backward compatibility rules and deprecation conventions.
+- Idempotency conventions for safe retries.
+- If the language is not typically used for web services, document what contract-based communication looks like (e.g., library APIs, RPC, message queues).
 
-**Example (standard error body, RFC 7807 style):**
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- URL naming: plural nouns, kebab-case, no verbs in paths.
+- Versioning in URI: `/api/v1/...`.
+- RFC 7807 error body with `type`, `title`, `status`, `detail`, `instance`, `correlationId`.
+- Backward compatibility: additive changes allowed within a version; renames/removals require a new version.
+
+**Example (error body format — illustrative; research the convention for the target ecosystem):**
 
 ```json
 {
   "type": "https://api.example.com/errors/insufficient-funds",
   "title": "Insufficient funds",
   "status": 422,
-  "detail": "Account 42 balance is 12.50, transfer requires 100.00",
-  "instance": "/api/v1/transfers/9083",
+  "detail": "Balance is 12.50, transfer requires 100.00",
   "correlationId": "b7ad6b7169203331"
 }
 ```
 
-**Example (backward compatibility):**
+### Research Completion Checklist
 
-```text
-✅ Allowed in v1:  adding the optional field "nickname" to the User response
-❌ Requires v2:    renaming "email" to "emailAddress", or making "phone" mandatory
-```
+- [ ] URL/resource naming conventions documented.
+- [ ] Payload field casing convention documented (and any divergence from internal language convention noted).
+- [ ] API versioning strategies documented with trade-offs.
+- [ ] Standard error response format for this ecosystem documented.
+- [ ] Contract-first tooling identified (OpenAPI, Protobuf, etc.).
+- [ ] Backward compatibility and deprecation conventions documented.
 
 ---
 
 ## 9. Security and Privacy
 
-Guidelines to prevent vulnerabilities.
+Covers practices to prevent vulnerabilities and protect sensitive data. This section should be researched with reference to OWASP, CERT, and any language- or ecosystem-specific security guidance.
 
-- **Code injection:** Use parameterized queries (SQL) and output escaping (XSS).
-- **Secrets management:** Prohibit hardcoding passwords, tokens, or API keys; use environment variables or secret managers (e.g., Vault).
-- **Authentication and Authorization:** Define how access controls should be implemented (JWT, OAuth, roles).
-- **Encryption:** Standards for encrypting sensitive data at rest and in transit.
-- **File validation:** Restrictions on type, size, and content for file uploads.
-- **Sensitive data in logs:** Prohibit logging passwords, tokens, or personally identifiable information (PII); mask when unavoidable.
+### Research Objectives
 
-**Example (SQL injection prevention):**
+Research and document:
 
-```python
-# ❌ Bad: string concatenation, vulnerable to injection
-cursor.execute("SELECT * FROM users WHERE email = '" + email + "'")
+- The OWASP Top 10 risks as they specifically manifest in this language/ecosystem, and the idiomatic mitigation for each.
+- Code injection prevention techniques idiomatic to this ecosystem (parameterized queries, ORM usage, output encoding).
+- Secrets management conventions: what the ecosystem recommends for managing credentials, tokens, and API keys.
+- Authentication and authorization patterns recognized in this ecosystem.
+- Data encryption conventions (at rest and in transit) as recommended for this ecosystem.
+- File upload validation conventions.
+- PII handling and privacy conventions (logging, storage, transmission).
+- Security-focused static analysis tools available for this language.
+- Whether the language or ecosystem has official security advisories or a CVE tracking process.
 
-# ✅ Good: parameterized query
-cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Parameterized queries vs. string concatenation for SQL.
+- Environment variables or secret managers for credentials.
+- Never logging passwords, tokens, or PII.
+
+**Example (SQL injection — illustrative; research the idiomatic approach for the target language):**
+
+```
+// ❌ String concatenation:  "SELECT * FROM users WHERE email = '" + email + "'"
+// ✅ Parameterized query:   cursor.execute("SELECT ... WHERE email = %s", (email,))
 ```
 
-**Example (secrets management):**
+### Research Completion Checklist
 
-```javascript
-// ❌ Bad: hardcoded secret
-const apiKey = "sk-live-9f8a7b6c5d";
-
-// ✅ Good: environment variable
-const apiKey = process.env.PAYMENT_API_KEY;
-```
+- [ ] OWASP Top 10 mitigations documented as they apply to this language/ecosystem.
+- [ ] Injection prevention techniques documented with idiomatic examples.
+- [ ] Secrets management conventions documented.
+- [ ] Authentication and authorization patterns documented.
+- [ ] PII handling and log sanitization conventions documented.
+- [ ] Security-focused static analysis tools identified for this language.
 
 ---
 
 ## 10. Dependency Management
 
-Control over external libraries and packages.
+Covers how external libraries and packages are introduced, versioned, maintained, and secured. *Boundary with Section 14:* this section focuses on external library lifecycle (what to use and how to manage it); Section 14 focuses on producing the build artifact (how to compile and package).
 
-- **Versioning:** Pin exact versions or allow specific semantic versioning (SemVer) ranges.
-- **Updates:** Establish a frequency for reviewing and updating outdated or vulnerable dependencies.
-- **Official repositories:** Only use trusted sources (e.g., npmjs, Maven Central, Packagist).
-- **Auditing:** Mandate vulnerability scanning on dependencies (e.g., `npm audit`, `OWASP Dependency Check`).
-- **Justification for new dependencies:** Require an evaluation (license, maintenance activity, size) before adding a new library.
+### Research Objectives
 
-**Example (SemVer range policy):**
+Research and document:
 
-```json
-{
-  "dependencies": {
-    "express": "4.19.2",     // ✅ exact pin for critical runtime deps
-    "lodash": "^4.17.21"     // ✅ minor/patch range allowed for utilities
-  }
-}
-```
+- The primary package manager(s) for this language and their conventions (covered in depth in Section 18 — cross-reference).
+- Version pinning conventions: exact pinning vs. semantic versioning ranges — and which the ecosystem recommends.
+- Lockfile conventions: which file, whether it is committed, and its role.
+- Trusted/official package repositories for this ecosystem and how to verify a package's provenance.
+- Dependency auditing tools and conventions (`npm audit`, `cargo audit`, OWASP Dependency-Check, etc.).
+- Dependency update cadence conventions (how often to review and update).
+- How to evaluate a new dependency before adding it (license, maintenance activity, download volume, security history).
+- Transitive dependency management conventions.
+- How the ecosystem handles vendoring (copying dependencies into the repository).
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- SemVer range policy: exact pin for critical runtime deps, ranges for utilities.
+- Lockfile: always committed for applications, sometimes gitignored for libraries.
+- Audit tools integrated into CI pipeline.
+
+### Research Completion Checklist
+
+- [ ] Primary package manager(s) identified and their version pinning conventions documented.
+- [ ] Lockfile role and commit conventions documented.
+- [ ] Trusted repositories identified.
+- [ ] Dependency auditing tools documented and their CI integration described.
+- [ ] Criteria for evaluating new dependencies documented.
+- [ ] Vendoring conventions documented (if applicable).
 
 ---
 
 ## 11. Testing and Quality Validation
 
-Criteria to ensure the code works as expected.
+Covers how to verify that code behaves correctly: unit, integration, and other testing conventions.
 
-- **Code coverage:** Set a minimum percentage for line and branch coverage (e.g., > 80%).
-- **Unit tests:** Mandatory structure (AAA Pattern: *Arrange, Act, Assert*).
-- **Integration tests:** Define which modules or external services must be tested together.
-- **Test naming:** Rules for naming test methods (e.g., `whenDoingX_GivenConditionY_ThenResultZ`).
-- **Static analysis:** Pass all rules from quality tools before merging.
-- **Test independence:** Each test must be runnable in isolation and in any order (no shared mutable state).
+### Research Objectives
 
-**Example (AAA pattern and naming):**
+Research and document:
 
-```java
-@Test
-void whenApplyingDiscount_givenPercentageAbove100_thenThrowsException() {
-    // Arrange
-    PriceCalculator calculator = new PriceCalculator();
+- The primary testing framework(s) for this language and their conventions.
+- Test organization: where tests live relative to the code they test (Section 4 cross-reference), how test files are named.
+- Test structure conventions (e.g., Arrange-Act-Assert, Given-When-Then, describe/it).
+- Test naming conventions.
+- Code coverage conventions: what to measure (lines, branches, paths), minimum thresholds recognized by the community.
+- Unit test conventions: isolation approaches, mocking/stubbing libraries and idioms.
+- Integration test conventions: what to test together, how to handle external dependencies (real vs. test doubles).
+- Contract testing conventions (if applicable in this ecosystem).
+- Property-based testing availability and conventions.
+- Static analysis tools and their role in quality validation (cross-reference Section 13).
+- Community conventions for test independence (avoiding shared mutable state between tests).
 
-    // Act & Assert
-    assertThrows(IllegalArgumentException.class,
-        () -> calculator.calculateFinalPrice(BigDecimal.TEN, 150));
-}
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- AAA pattern: Arrange, Act, Assert.
+- Test method naming: `whenX_givenY_thenZ` or `should_doX_when_Y`.
+- Coverage minimum: > 80% lines and branches.
+
+**Example (AAA pattern — illustrative; research the idiomatic structure for the target language):**
+
 ```
+// Arrange: set up inputs and context
+// Act:     call the unit under test
+// Assert:  verify the outcome
+```
+
+### Research Completion Checklist
+
+- [ ] Primary testing framework(s) identified and their conventions documented.
+- [ ] Test file naming and location conventions documented.
+- [ ] Test structure convention documented (AAA, GWT, or other).
+- [ ] Coverage tooling and community-recognized thresholds documented.
+- [ ] Mocking/stubbing approach documented.
+- [ ] Integration test scope and conventions documented.
+- [ ] Test independence conventions documented.
 
 ---
 
 ## 12. Version Control and Workflow
 
-Rules regarding the use of Git (or similar).
+Covers conventions for using version control systems (primarily Git) in this ecosystem.
 
-- **Branching strategy:** Choose between GitFlow, GitHub Flow, or Trunk-Based Development.
-- **Branch naming:** Define a convention (e.g., `feature/JIRA-123-user-login`, `hotfix/payment-timeout`).
-- **Commit messages:** Adopt a standard like **Conventional Commits** (e.g., `feat:`, `fix:`, `docs:`, `chore:`).
-- **Pull Requests (PRs) / Merge Requests (MRs):** Minimum requirements to open a PR (e.g., passing CI, at least 1 approval).
-- **Code review checklist:** Define what reviewers must verify (correctness, tests, security, adherence to this standard) and expected response time.
-- **Commit frequency:** Encourage atomic and frequent commits.
+### Research Objectives
 
-**Example (Conventional Commits):**
+Research and document:
 
-```text
+- Branching strategies recognized in this ecosystem and their trade-offs (GitFlow, GitHub Flow, Trunk-Based Development, others).
+- Branch naming conventions.
+- Commit message conventions recognized in this ecosystem (Conventional Commits, Angular, or other).
+- Pull Request / Merge Request conventions: size, required checks, review requirements.
+- Code review conventions: what reviewers are expected to verify, response time expectations.
+- Tagging and release conventions.
+- Monorepo vs. multi-repo conventions in this ecosystem.
+- Any ecosystem-specific version control tooling or extensions.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`.
+- Branch naming: `feature/TICKET-description`, `hotfix/description`.
+- Atomic commits: small, single-purpose changes.
+
+**Example (Conventional Commits format — illustrative; research whether this is conventional in the target ecosystem):**
+
+```
 feat(auth): add refresh token rotation
 fix(orders): prevent duplicate shipment on retry
-docs(readme): document local setup with Docker
-chore(deps): bump spring-boot to 3.3.1
+docs(readme): document local setup
+chore(deps): bump dependency version
 ```
 
-**Example (minimal review checklist):**
+### Research Completion Checklist
 
-```markdown
-- [ ] The change does what the ticket describes
-- [ ] New/changed logic is covered by tests
-- [ ] No secrets, credentials, or PII introduced
-- [ ] Naming and formatting follow the standard
-- [ ] No commented-out or dead code left behind
-```
+- [ ] Recognized branching strategies documented with trade-offs (do not prescribe one).
+- [ ] Commit message convention documented (Conventional Commits or ecosystem alternative).
+- [ ] Branch naming conventions documented.
+- [ ] PR/MR conventions documented (size, required checks, approvals).
+- [ ] Release and tagging conventions documented.
 
 ---
 
 ## 13. Automation Tools (Linters and Formatters)
 
-Mandatory software to enforce the standard automatically.
+Covers the tooling used to automatically enforce standards without human intervention. *Boundary with Section 14:* this section covers quality enforcement tools; Section 14 covers build and artifact production.
 
-- **Linters:** Language-specific tools (e.g., ESLint, Pylint, Rubocop, Checkstyle).
-- **Formatters:** Use of tools like Prettier, Black, or gofmt to apply formatting automatically.
-- **Static Application Security Testing (SAST) tools:** Integrate SonarQube, CodeQL, or similar to detect code smells and vulnerabilities.
-- **CI/CD integration:** Define that the pipeline must fail if automated validations are not passed.
-- **Pre-commit hooks:** Run formatters and fast linters locally before each commit (e.g., Husky, pre-commit).
-- **Shared configuration:** Linter/formatter config files must live in the repository so every developer and CI job uses identical rules.
+### Research Objectives
 
-**Example (pipeline quality gate):**
+Research and document:
 
-```yaml
-# ci.yml (excerpt)
-quality:
-  steps:
-    - run: npm run lint          # fails the build on lint errors
-    - run: npm run test -- --coverage
-    - run: npm audit --audit-level=high
-```
+- The canonical linter(s) for this language: their names, what they check, and their configuration format.
+- The canonical formatter(s) for this language and whether formatting is part of the language toolchain (e.g., `gofmt`, `rustfmt` are official).
+- Static Application Security Testing (SAST) tools available for this language.
+- Code quality platforms used in this ecosystem (SonarQube, CodeClimate, Codacy, etc.).
+- Pre-commit hook tooling conventions (Husky, pre-commit, lefthook, etc.).
+- How linter and formatter configurations are shared across a team (config files in the repository).
+- CI/CD integration conventions: at what stage quality gates run and what constitutes a failure.
+- Whether the ecosystem has an official quality/style enforcement tool bundled with the language.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Linters: ESLint, Pylint, Rubocop, Checkstyle, Clippy.
+- Formatters: Prettier, Black, gofmt, rustfmt.
+- CI gate: pipeline fails on lint or format violations.
+- Shared config file committed to the repository.
+
+### Research Completion Checklist
+
+- [ ] Canonical linter(s) identified with their configuration format documented.
+- [ ] Canonical formatter(s) identified; note if officially bundled with the language.
+- [ ] SAST tools available for this language identified.
+- [ ] Pre-commit hook tooling conventions documented.
+- [ ] CI/CD quality gate integration conventions documented.
 
 ---
 
 ## 14. Build, Packaging, and Containerization
 
-Rules about how the final artifact is compiled, packaged, and shipped. (Section 13 covers quality gates in CI; this section covers producing the deliverable itself.)
+Covers how the final deliverable artifact is produced and distributed. *Boundary with Section 10:* Section 10 covers managing which external libraries to use; this section covers producing the build artifact from the source code.
 
-- **Reproducible builds:** Mandate lockfiles and pinned toolchain versions (compiler, SDK, runtime) so any machine produces the same artifact.
-- **Compiler/build flags:** Define the standard flags per environment (e.g., warnings-as-errors in CI, optimization level for release, debug symbols policy).
-- **Single build entry point:** One standardized command to build the project (e.g., `make build`, `./gradlew build`, `npm run build`) — no tribal knowledge of manual steps.
-- **Artifact naming and versioning:** Convention for artifact names (e.g., `service-name-1.4.2+gitsha.jar`) and where they are published (artifact registry).
-- **Environment configuration:** Follow 12-factor principles — configuration comes from the environment; one build serves all environments (never compile per environment); `.env` files are never committed.
-- **Containerization:** Define the approved base images for the language (and their update policy), mandate multi-stage builds, run as non-root user, and require image vulnerability scanning.
-- **Artifact integrity:** Sign artifacts/images and generate an SBOM (software bill of materials) when the criticality of the system requires it.
+### Research Objectives
 
-**Example (compiler flags policy):**
+Research and document:
 
-```text
-CI / release builds:   -Wall -Wextra -Werror  (all warnings are errors)
-Local development:     -Wall -Wextra          (warnings visible, not blocking)
-```
+- The build system(s) canonical to this language (e.g., Maven/Gradle for Java, Cargo for Rust, the Go toolchain, MSBuild for C#).
+- Standard build commands and conventions (the "single entry point" principle — one command to build).
+- Compiler or transpiler flag conventions per environment (development, CI, release).
+- Reproducible build conventions: lockfiles, toolchain pinning, deterministic output.
+- Artifact naming and versioning conventions.
+- Environment configuration conventions (12-factor, `.env` files, platform-specific approaches).
+- Container image conventions for this language/ecosystem: approved base images, multi-stage build patterns, non-root user conventions, image vulnerability scanning.
+- Artifact signing and software bill of materials (SBOM) conventions.
+- Distribution conventions: artifact registries, package publishing.
 
-**Example (multi-stage, non-root Dockerfile):**
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Single build entry point: `make build`, `./gradlew build`, `cargo build`.
+- 12-factor: one artifact, configuration from environment, never per-environment builds.
+- Multi-stage Docker builds with minimal runtime image and non-root user.
+- Toolchain version pinned in a lockfile or toolchain file.
+
+**Example (multi-stage container build — illustrative; research the idiomatic base image for the target language):**
 
 ```dockerfile
-# ✅ Build stage: full toolchain
-FROM golang:1.24 AS build
-WORKDIR /app
-COPY . .
-RUN CGO_ENABLED=0 go build -o /service ./cmd/myservice
+# Build stage: full toolchain
+FROM <language-official-image>:<version> AS build
+# ... build steps ...
 
-# ✅ Runtime stage: minimal image, non-root
-FROM gcr.io/distroless/static:nonroot
-COPY --from=build /service /service
+# Runtime stage: minimal image, non-root user
+FROM <minimal-runtime-image>
+COPY --from=build /artifact /artifact
 USER nonroot
-ENTRYPOINT ["/service"]
+ENTRYPOINT ["/artifact"]
 ```
 
-**Example (environment configuration):**
+### Research Completion Checklist
 
-```text
-❌ Bad:  building myapp-prod.jar and myapp-qa.jar with different embedded configs
-✅ Good: one myapp-1.4.2.jar; DATABASE_URL and LOG_LEVEL injected by the environment
-```
+- [ ] Canonical build system(s) identified and standard build commands documented.
+- [ ] Compiler/transpiler flag conventions per environment documented.
+- [ ] Reproducible build approach documented.
+- [ ] Artifact naming and versioning conventions documented.
+- [ ] Environment configuration conventions documented.
+- [ ] Official or community-standard container base images identified.
+- [ ] SBOM and artifact signing conventions documented (if applicable).
 
 ---
 
 ## 15. Performance and Resource Efficiency
 
-Rules to prevent avoidable performance problems from reaching production.
+Covers practices to prevent avoidable performance problems.
 
-- **Algorithmic complexity:** Flag obviously inefficient patterns (e.g., nested loops over large collections when a lookup structure would do).
-- **Database access:** Prohibit N+1 query patterns; require pagination for unbounded result sets; define indexing expectations.
-- **Resource lifecycle:** Mandate explicit release of connections, files, and streams (e.g., `try-with-resources`, `using`, context managers).
-- **Caching policy:** Define when caching is expected, which layers own it, and invalidation rules.
-- **Premature optimization:** Prohibit micro-optimizations that harm readability without measured evidence; require profiling data to justify complex optimizations.
-- **Budgets:** Optionally set measurable budgets (e.g., p95 latency, bundle size for front-end, memory ceilings).
+### Research Objectives
 
-**Example (resource lifecycle):**
+Research and document:
 
-```java
-// ❌ Bad: connection may leak if an exception occurs
-Connection conn = dataSource.getConnection();
-runQuery(conn);
-conn.close();
+- Algorithmic complexity conventions: are there community-recognized guidelines about when to use which data structure or algorithm?
+- Database access patterns that are considered anti-patterns in this ecosystem (e.g., N+1 queries) and their idiomatic solutions.
+- Resource lifecycle management conventions (connections, file handles, streams, sockets) — how the language and ecosystem manage them.
+- Caching conventions: what layers own caching, which libraries are standard, invalidation patterns.
+- Profiling and benchmarking tooling available for this language.
+- Memory management and garbage collection tuning guidance (if applicable).
+- Community conventions around premature optimization: when to optimize and how to justify it.
+- Performance testing conventions (load tests, benchmarks) if they exist in this ecosystem.
 
-// ✅ Good: automatic release
-try (Connection conn = dataSource.getConnection()) {
-    runQuery(conn);
-}
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- N+1 query pattern and solutions (batch fetching, joins, eager loading).
+- Resource lifecycle: `try-with-resources`, `using`, context managers, RAII.
+- Profiling tools standard to this language.
+
+**Example (resource lifecycle — illustrative; research the idiomatic approach for the target language):**
+
+```
+// Automatic resource release patterns vary by language:
+// Java:   try (Connection c = ...) { }
+// Python: with open(...) as f:
+// C#:     using (var c = ...) { }
+// Rust:   ownership/drop (automatic)
+// Research what is idiomatic for the target language
 ```
 
-**Example (N+1 query):**
+### Research Completion Checklist
 
-```text
-❌ Bad:  1 query for orders + 1 query per order for its customer (N+1)
-✅ Good: 1 query joining orders with customers, or a batched IN (...) fetch
-```
+- [ ] Community-recognized algorithmic complexity guidelines documented.
+- [ ] Common performance anti-patterns for this ecosystem documented with idiomatic solutions.
+- [ ] Resource lifecycle management conventions documented.
+- [ ] Profiling and benchmarking tooling identified.
+- [ ] Caching layer conventions documented (if applicable).
+- [ ] Memory/GC tuning guidance documented (if applicable).
 
 ---
 
 ## 16. Concurrency and Thread Safety
 
-Rules for code that runs in parallel or asynchronously (critical in languages such as Java, C#, Go, Rust, and in async runtimes like Node.js or Python asyncio).
+Covers code that runs in parallel or asynchronously. Relevance varies significantly by language (critical in Java, C#, Go, Rust; different model in Python, JavaScript, Elixir).
 
-- **Shared state:** Minimize shared mutable state; prefer immutability and message passing.
-- **Synchronization primitives:** Define which mechanisms are approved (locks, channels, atomics) and which are discouraged.
-- **Thread-safe collections:** Mandate concurrent-safe structures when state must be shared (e.g., `ConcurrentHashMap`).
-- **Async conventions:** Rules for `async/await` usage, prohibition of blocking calls inside async contexts, and cancellation handling.
-- **Deadlock prevention:** Establish lock-ordering rules and timeouts.
-- **Documentation:** Require classes/functions to declare their thread-safety guarantees.
+### Research Objectives
 
-**Example (shared mutable state):**
+Research and document:
 
-```java
-// ❌ Bad: race condition on a plain HashMap accessed by multiple threads
-Map<String, Integer> counters = new HashMap<>();
+- The concurrency model of this language (threads, async/await, coroutines, actors, CSP channels, green threads, event loop — research what is native).
+- Community conventions for shared mutable state (minimize it, use immutability, message passing, etc.).
+- Synchronization primitives available in this language and when each is appropriate (locks, mutexes, semaphores, atomics, channels).
+- Thread-safe data structures available in the standard library or ecosystem.
+- Async/await conventions if applicable: what blocking calls are prohibited in async contexts, cancellation handling.
+- Deadlock prevention conventions.
+- How classes or functions are expected to declare their concurrency/thread-safety guarantees in documentation.
+- The dominant concurrency libraries or frameworks in this ecosystem.
 
-// ✅ Good: thread-safe structure with atomic update
-Map<String, Integer> counters = new ConcurrentHashMap<>();
-counters.merge(key, 1, Integer::sum);
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Thread-safe collections vs. plain collections.
+- Blocking calls inside async contexts.
+- Lock-ordering rules for deadlock prevention.
+- Actor model or channel-based communication vs. shared memory.
+
+**Example (concurrency model varies widely — illustrative):**
+
+```
+// The right model depends entirely on the target language:
+// Java:       threads + synchronized, CompletableFuture, virtual threads
+// JavaScript: single-threaded event loop, async/await, no shared memory
+// Go:         goroutines + channels (CSP)
+// Rust:       ownership prevents data races at compile time
+// Python:     GIL limits true parallelism; asyncio for I/O concurrency
+// Research the idiomatic model for the target language
 ```
 
-**Example (blocking inside async):**
+### Research Completion Checklist
 
-```javascript
-// ❌ Bad: synchronous file read blocks the event loop
-const data = fs.readFileSync(path);
-
-// ✅ Good: non-blocking equivalent
-const data = await fs.promises.readFile(path);
-```
+- [ ] Language's native concurrency model documented.
+- [ ] Shared mutable state conventions documented.
+- [ ] Available synchronization primitives and their use cases documented.
+- [ ] Async/await or equivalent conventions documented (if applicable).
+- [ ] Thread-safety documentation conventions documented.
+- [ ] Dominant concurrency libraries identified.
 
 ---
 
 ## 17. Governance and Standard Updates
 
-How the standard is kept alive over time.
+Covers how a standard produced from this library is maintained and evolved over time.
 
-- **Standard owner:** Designate a responsible person (architect, lead developer) to resolve questions and approve changes.
-- **Modification process:** Establish how new rules are proposed and discussed (e.g., via RFCs or issues in the repository).
-- **Review frequency:** Define a schedule for reviewing and updating the document (e.g., quarterly or semi-annually).
-- **Exceptions:** Document the process for requesting a justified exception to a specific rule.
-- **Versioning of the standard:** Version the standard itself (e.g., SemVer) and keep a changelog so teams know what changed and when.
+### Research Objectives
 
-**Example (exception request template):**
+Research and document:
+
+- How official language specifications and style guides are maintained and updated (governance model, versioning, change process).
+- How the language community handles breaking changes, deprecations, and migration paths (e.g., Python 2→3, Java LTS, Rust editions).
+- Patterns for deprecating rules in a standard: how to mark a rule as deprecated, communication, and enforcement phase-out.
+- Backward compatibility policies recognized in this ecosystem.
+- Migration path documentation conventions.
+- Change impact assessment practices.
+- How standards bodies or community groups announce and discuss changes (RFCs, PEPs, JEPs, GitHub Discussions, etc.).
+- Historical tracking of removed or changed rules — conventions for maintaining a changelog.
+
+### Illustrative concepts *(research these, do not assume they apply)*
+
+- Standard ownership (architect, lead, working group).
+- RFC or proposal-based change process.
+- Quarterly or semi-annual review cadence.
+- Rule exception request process.
+- Versioning the standard itself (with a changelog).
+- Deprecation lifecycle: warn → soft-remove → hard-remove, with migration guidance at each stage.
+
+**Example (rule exception request — illustrative template):**
 
 ```markdown
 ## Rule Exception Request
-- Rule: 5.3 "Max 30 lines per function"
-- File(s): src/parser/tokenizer.c
-- Justification: the state machine is clearer as a single 85-line switch.
-- Mitigation: extensive block comments + 100% branch coverage.
-- Approved by: <standard owner> — Date: <yyyy-mm-dd> — Expires: <yyyy-mm-dd or "permanent">
+- Rule: <section.rule reference>
+- File(s): <paths>
+- Justification: <why this specific case warrants an exception>
+- Mitigation: <what compensates for the exception>
+- Approved by: <owner> — Date: <yyyy-mm-dd> — Expires: <date or "permanent">
 ```
+
+**Example (deprecation lifecycle — illustrative):**
+
+```
+Phase 1 – Warn:        rule still enforced; tooling emits a deprecation warning
+Phase 2 – Soft remove: rule removed from the standard; tooling warning remains
+Phase 3 – Hard remove: tooling warning removed; rule considered historical
+```
+
+### Research Completion Checklist
+
+- [ ] Language/ecosystem governance model documented (how official specs evolve).
+- [ ] Community change process documented (RFCs, PEPs, JEPs, or equivalent).
+- [ ] Breaking change and deprecation conventions documented.
+- [ ] Migration path documentation conventions documented.
+- [ ] Changelog conventions documented.
 
 ---
 
-> **Final note:** This document is a template. It is recommended to adjust the depth of each section to the size of the team and the criticality of the system being developed. The successful implementation of a standard depends as much on its clarity as on the automation of its enforcement.
+## 18. Ecosystem Conventions
+
+Covers conventions that are specific to the language's ecosystem and do not fit naturally into the sections above. These are often as important as language syntax rules but are frequently overlooked in generic standards.
+
+### Research Objectives
+
+Research and document:
+
+- Package manager conventions specific to this language: naming, publishing, metadata (e.g., `package.json`, `Cargo.toml`, `pyproject.toml`, `composer.json`, `pom.xml`).
+- The language's own standards/specification process and its outputs (e.g., Python PEPs including PEP 8 and PEP 257, PHP PSRs, Java JSRs/JEPs, Rust RFCs, TC39 proposals for JavaScript).
+- Module system and namespace conventions (how modules are named, structured, and published to a registry).
+- Package naming conventions for published libraries.
+- Workspace and monorepo tooling conventions specific to this ecosystem.
+- Cross-language interop conventions if applicable (e.g., JVM interop, WASM, FFI).
+- Community resources: the canonical Q&A site, official forum, major conference, primary community governance channel.
+- Versioning conventions specific to this ecosystem (beyond SemVer if applicable).
+
+### Illustrative concepts *(examples of ecosystem conventions by language — do not copy, research the target)*
+
+- **Python:** PEP 8 (style), PEP 257 (docstrings), PEP 517/518 (build), `pyproject.toml`, `src` layout, virtual environments.
+- **Go:** Module path conventions (e.g., `github.com/org/repo`), `go.mod`/`go.sum`, workspace mode.
+- **Rust:** Crate naming (lowercase, underscores), `Cargo.toml` conventions, `crates.io` publishing.
+- **Node.js/JavaScript:** `package.json` field conventions, npm/pnpm/yarn workspace conventions, ESM vs. CommonJS module system.
+- **PHP:** PSR standards (PSR-1, PSR-2, PSR-4 autoloading, PSR-7, PSR-12), Composer conventions.
+- **Java:** Package naming (reverse domain, e.g., `com.example.service`), Maven Central publishing, JCP/JEP process.
+
+### Research Completion Checklist
+
+- [ ] Package manager metadata file conventions documented.
+- [ ] Language's own specification/standards process documented (PEPs, PSRs, JEPs, RFCs, etc.).
+- [ ] Module and package naming conventions documented.
+- [ ] Workspace/monorepo tooling conventions documented (if applicable).
+- [ ] Published package conventions documented (registry, naming, metadata).
+- [ ] Key community resources identified (official forum, primary registry, governance channel).
+
+---
+
+## 19. Development Toolchain
+
+Covers the standard tools used day-to-day to develop in this language: the compiler or interpreter, the runtime, the SDK, and supporting tools. This is distinct from Sections 13 (quality enforcement) and 14 (build/packaging).
+
+### Research Objectives
+
+Research and document:
+
+- The compiler, interpreter, or transpiler: official name, version management, and how to install it.
+- The runtime environment: what is needed to run the language (JVM, Node.js, CPython, .NET CLR, native binary, etc.).
+- The official SDK or standard development kit and what it includes.
+- The official or community-standard version manager for this language (e.g., `nvm`, `pyenv`, `sdkman`, `rustup`, `gvm`, `asdf`).
+- The official REPL or interactive development environment (if one exists).
+- Debugging tools: official debugger, IDE integration, remote debugging conventions.
+- Official or community-standard language server (LSP) for IDE support.
+- Recommended IDE or editor support: extensions, plugins, official recommendations.
+- Official documentation tools (if not covered in Section 6).
+- Any official CLI tools bundled with the language for scaffolding, formatting, testing, etc.
+
+### Illustrative concepts *(examples — research for the target language)*
+
+- Java: JDK version management (sdkman, Jabba), JVM flags, official debugger (JDWP), Language Server (Eclipse JDT).
+- Python: `pyenv` for version management, `venv`/`virtualenv`, `pdb` debugger, Pylsp/Pyright.
+- Go: single official toolchain (`go` command covers build, test, format, doc), `gopls` language server.
+- Rust: `rustup` for toolchain management, `cargo` (also the build tool), `rust-analyzer` language server.
+- Node.js: `nvm`/`fnm`, `node` + `npm`/`pnpm`, Chrome DevTools protocol for debugging.
+
+### Research Completion Checklist
+
+- [ ] Compiler/interpreter/runtime documented with version management tooling.
+- [ ] Official SDK contents documented.
+- [ ] Standard version manager identified and its conventions documented.
+- [ ] Debugging tooling documented (local and remote).
+- [ ] Official or community-standard language server identified.
+- [ ] Recommended IDE/editor support and plugins documented.
+- [ ] Official CLI tools bundled with the language documented.
+
+---
+
+> **Final note:** This document is a research guide, not a standard. Every bullet point and example above is a topic to investigate for the target language — not a rule to adopt. The language-specific documents produced by `/standard_research` are where the actual researched standards live.
