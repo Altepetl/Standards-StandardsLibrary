@@ -166,6 +166,38 @@ let mut keys: Vec<_> = map.keys().collect();
 keys.sort_unstable();
 ```
 
+## Marker Comments
+
+Rust projects commonly use specific marker comments to signal intent for future developers:
+
+- `// TODO: ` — An action item, missing feature, or technical debt that should be addressed later.
+- `// FIXME: ` — Broken code or a known bug that needs to be fixed.
+- `// HACK: ` — A workaround or suboptimal implementation that should be refactored eventually.
+- `// NOTE: ` — Additional information or context about a specific implementation detail.
+
+**Convention:** When using `TODO` or `FIXME`, it is best practice to include a reference to an issue tracker or an author identifier, providing clear accountability and context. For example: `// TODO(#123): Handle edge case for zero`. Some projects enforce this via linters (like `clippy::todo` or custom grep checks in CI) to ensure unresolved issues aren't accidentally forgotten.
+
+## Self-Documenting Code Philosophy
+
+The Rust ecosystem strongly favors **self-documenting code** over extensive inline comments. This philosophy manifests primarily through Rust's expressive type system and ownership rules:
+
+- **Expressive Types:** Instead of writing comments to explain what a variable is, you should rely on types. Use the Newtype pattern (e.g., `struct UserId(u64)`) to enforce domain logic at compile time, eliminating the need to comment that a `u64` represents a user ID.
+- **Encoding State:** If a state is impossible, it should be made unrepresentable in the type system rather than guarded with a runtime check and a comment.
+- **Error Handling:** If a function might fail, this shouldn't merely be documented in comments—it should be explicitly codified in the signature by returning a `Result`. 
+- **Focus on the "Why":** Comments should focus exclusively on the "why" (business rules, context, trade-offs) instead of the "what" or "how" (which the code and types should already clearly convey).
+
+## README Conventions
+
+In the Rust ecosystem, the `README.md` file at the root of a package serves as the primary entry point for users visiting the repository (e.g., on GitHub) or crates.io.
+
+- **crates.io Integration:** The `Cargo.toml` file usually points to the `README.md` (via the `readme = "README.md"` key), and crates.io will render it automatically on the package's page.
+- **DRY Documentation:** Since `lib.rs` uses `//!` for crate-level documentation, it is common to avoid duplicating this content in the `README.md`. A prevalent pattern is to write the documentation in `README.md` and include it in `lib.rs` using `#![doc = include_str!("../README.md")]`. Alternatively, tools like `cargo-readme` can generate the `README.md` directly from the `lib.rs` doc comments.
+- **Content:** A canonical README for a Rust crate should include:
+  - CI status and crates.io version badges.
+  - A brief description of the crate's purpose.
+  - A simple, copy-pasteable example of use.
+  - Instructions for installation (e.g., `cargo add my_crate`) and contributing.
+
 ## `cargo doc`
 
 - `cargo doc` — builds HTML docs for the crate into `target/doc/`.

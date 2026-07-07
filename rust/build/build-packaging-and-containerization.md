@@ -222,7 +222,49 @@ ENTRYPOINT ["/myapp"]
 
 ❌ A `build.rs` that shells out to the network or takes minutes — kills build portability and reproducibility.
 
-## 8. Reproducible builds & determinism
+## 8. Environment Configuration Conventions (12-Factor)
+
+Following the **12-Factor App** methodology, Rust applications should read their configuration from the environment at runtime, rather than hardcoding values or relying on complex configuration files baked into the artifact. This ensures that the same artifact can be deployed across multiple environments.
+
+### Runtime vs Build-time Environment Variables
+
+| Approach | Use Case | Mechanism |
+|---|---|---|
+| **Runtime** | Deployment config (DB URLs, ports, secrets). | `std::env::var("DATABASE_URL")` or the `config` crate. |
+| **Build-time** | Embedding version info, compile-time flags. | `env!("CARGO_PKG_VERSION")` or `option_env!("...")`. |
+
+✅ Use the `dotenvy` crate for local development. It automatically loads `.env` files into the environment.
+✅ Add `.env` to `.gitignore`. Never commit `.env` files containing secrets or environment-specific configuration to source control.
+✅ Create a `.env.example` or `.env.sample` template file and commit it, showing developers what keys are required.
+✅ For complex configuration, use a dedicated configuration library like `config` or `figment`, which can seamlessly merge environment variables, `.env` files, and JSON/TOML defaults.
+
+❌ Using the `env!` macro for database connection strings or API keys. This bakes the secret or environment-specific configuration directly into the compiled artifact, violating the principle of "build once, deploy anywhere".
+
+## 9. Artifact Naming and Versioning Conventions
+
+When building Rust artifacts for distribution, naming conventions depend on whether the artifact is a binary, a Rust library, or a C-ABI library.
+
+### Default Cargo Naming
+
+- **Binaries:** Match the `[[bin]]` name or `[package.name]`. Output is `myapp` (Linux/macOS) or `myapp.exe` (Windows).
+- **Rust Libraries (`rlib`):** `lib<name>.rlib` (e.g., `libserde.rlib`).
+- **C-ABI Libraries:** `lib<name>.so` (Linux), `lib<name>.dylib` (macOS), `<name>.dll` (Windows), or `lib<name>.a` (static).
+
+### Distribution Naming Conventions
+
+When packaging artifacts for GitHub Releases or external distribution (e.g., via `cargo-dist`), the archive should definitively state the program name, version, and target platform.
+
+✅ **Standard distribution artifact format:**
+`<name>-v<version>-<target_triple>.<ext>`
+
+Examples:
+- `myapp-v1.2.3-x86_64-unknown-linux-gnu.tar.gz`
+- `myapp-v1.2.3-x86_64-pc-windows-msvc.zip`
+- `myapp-v1.2.3-aarch64-apple-darwin.tar.gz`
+
+✅ **Dynamic libraries versioning:** If you are distributing a `cdylib` (.so), you may need to manually post-process the build to include the `soname` version (e.g., `libmyapp.so.1`) since Cargo does not automatically append version numbers to shared objects natively.
+
+## 10. Reproducible builds & determinism
 
 - `--locked` / `--frozen` to pin dependencies.
 - `rust-toolchain.toml` to pin the compiler.

@@ -25,6 +25,33 @@ The standard covers the concerns shared by essentially all Rust codebases:
 
 Sections outside this batch (dependencies, testing, CI/CD, concurrency, etc.) are cataloged separately under the same language directory.
 
+## Governance and standard evolution
+
+Rust does not have a formal ISO/ANSI specification. Instead, it is governed by a **team-based structure** (e.g., Language Team, Library Team, Cargo Team) operating under the umbrella of the **Rust Project**, with support from the **Rust Foundation**.
+
+Technical decisions and language features evolve through a rigorous **RFC (Request for Comments)** process. Once accepted, they are implemented and eventually stabilized. The official definitions of "standard Rust" are found in:
+- **The Rust Reference:** Describes the syntax and semantics of the language.
+- **The RFCs:** The detailed historical record of why features exist and how they should be used.
+- **The Rustonomicon:** The canonical guide for unsafe Rust.
+
+## Applicability dimensions and lifecycle
+
+Rust standards apply differently depending on the nature and phase of a project:
+
+- **Lifecycle phases:**
+  - **New code:** Should strictly adhere to the latest stable edition and maintain zero Clippy warnings.
+  - **Maintenance:** Legacy code migrations to new editions are handled mechanically via `cargo fix --edition`. Gradual adoption of idiomatic patterns (e.g., moving from indexing to iterators) is preferred during refactoring.
+- **Project types and layers:**
+  - **Applications (binaries):** Focus on business logic, observability, and flexible error handling (often using `anyhow`).
+  - **Libraries (crates):** Strict adherence to the Rust API Guidelines. Must prioritize predictable performance, zero-cost abstractions, non-panicking APIs, and structured error types (e.g., using `thiserror`).
+  - **FFI boundaries:** Code interfacing with C/C++ requires specific data layouts (`#[repr(C)]`) and careful `unsafe` auditing.
+
+### Community-specific interpretations (`#![no_std]`)
+
+Rust is deployed across wildly different environments, changing which parts of the ecosystem are accessible:
+- **Standard (`std`):** The default environment (OS present) supporting file I/O, threading, and dynamic allocation.
+- **Embedded and bare-metal (`#![no_std]`):** For microcontrollers, OS kernels, or certain WebAssembly targets, the standard library is disabled. Code relies solely on the `core` library (which makes no assumptions about the environment) and optionally `alloc`. Standards in this domain emphasize static allocation, deterministic memory usage, and hardware-specific safety constraints.
+
 ## Language positioning
 
 Rust is a **systems programming language** that provides memory safety and thread safety **without a garbage collector**. Its three load-bearing value propositions, repeated across the official documentation and the Rust programming book, are:

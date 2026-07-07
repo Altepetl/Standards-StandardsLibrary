@@ -112,7 +112,12 @@ Common patterns (no universal rule):
 Recognized conventions (community, not mandated):
 - **Size:** keep PRs small and reviewable; many Rust projects aim for PRs reviewable in < 30 min.
 - **Required checks (typical):** `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test` (often via `cargo nextest`), `cargo audit` / `cargo deny check`, and MSRV build.
-- **Reviews:** upstream Rust requires at least one (often two) reviewer sign-offs via GitHub PR review; `r+` comments were historically used via `bors`.
+- **Reviews (SLA and Process):** upstream Rust requires at least one (often two) reviewer sign-offs via GitHub PR review; `r+` comments were historically used via `bors`. Projects typically aim for an SLA of 24-48 business hours for initial review to avoid blocking contributors.
+- **Reviewer Expectations:** Reviewers are expected to explicitly verify:
+  - **`unsafe` blocks:** Must be accompanied by a `// SAFETY:` comment justifying the invariants. Reviewers must rigorously scrutinize these for soundness.
+  - **Breaking changes:** Ensure public API changes are intended and version-bumped correctly.
+  - **Performance and allocations:** Flag unnecessary allocations (e.g., `.clone()` in hot paths) or sub-optimal data structures.
+  - **Tests and docs:** Verify new logic has test coverage and public APIs have docstrings.
 - **Description:** the upstream Rust PR template asks for a description, motivation, and "does this break anything".
 
 ## 8. Tags and releases

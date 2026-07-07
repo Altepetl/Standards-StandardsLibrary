@@ -182,7 +182,34 @@ let nfc: String = "e\u{0301}".nfc().collect();   // "é"
 - Use NFD *before* decomposition-sensitive operations (e.g., some legacy collations).
 - Never compare un-normalized strings for equality.
 
-## 8. Case conversion is Unicode-aware
+## 8. Collation and locale-aware sorting
+
+Standard Rust comparisons (`<`, `>`, `==`, `sort()`) on strings compare them by their **byte values**. This is equivalent to comparing Unicode scalar values directly, which is generally incorrect for human-facing text.
+
+For example, a byte-wise sort puts `"Zebra"` before `"apple"`, and it completely mis-sorts accented characters. Furthermore, sorting rules depend on the locale (e.g., in Swedish, `ä` sorts after `z`, but in German, `ä` sorts like `a`).
+
+### ✅ Use ICU4X for locale-aware collation
+
+For user-facing sorting, use the [`icu`](https://crates.io/crates/icu) crate (specifically `icu::collator`) from the [ICU4X](https://github.com/unicode-org/icu4x) project.
+
+```rust
+use icu::collator::{Collator, CollatorOptions};
+use icu::locid::locale;
+
+// Note: Error handling omitted for brevity
+let collator = Collator::try_new(&locale!("sv").into(), CollatorOptions::new()).unwrap();
+let mut words = vec!["äpple", "zebra", "banan"];
+
+// Sort using Swedish rules (ä sorts after z)
+words.sort_by(|a, b| collator.compare(a, b));
+assert_eq!(words, vec!["banan", "zebra", "äpple"]);
+```
+
+**Conventions:**
+- **Binary sort vs. Collation:** Use standard `sort()` when sorting internal identifiers or machine data. Use `icu::collator` when sorting lists presented to a human.
+- **Normalization:** ICU4X collation handles normalization internally; you don't need to pre-normalize strings before passing them to the collator.
+
+## 9. Case conversion is Unicode-aware
 
 Rust's built-in `char::to_uppercase` / `to_lowercase` and `str::to_uppercase` / `to_lowercase` are **Unicode-aware** (they consult the Unicode Character Database). They are not ASCII-only.
 
@@ -193,7 +220,7 @@ assert_eq!("ß".to_uppercase(), "SS");                 // ✓ Unicode case foldi
 
 > **Caveat:** Rust's `to_uppercase`/`to_lowercase` are *locale-insensitive*. Turkish I (`İ`/`ı`), Lithuanian dot-above, and similar locale-specific rules are **not** applied. For locale-aware casing, use ICU4X (`icu::casemap`). For most server-side code the locale-insensitive default is correct; the gotcha matters when casing user-visible text in Turkish, Lithuanian, or Azeri.
 
-## 9. Regex and Unicode
+## 10. Regex and Unicode
 
 The [`regex`](https://crates.io/crates/regex) crate (rust-lang org) is Unicode-aware by default:
 
@@ -208,7 +235,7 @@ assert!(re.is_match("Hello, Κόσμε"));
 
 For grapheme-aware matching, consider the [`fancy-regex`](https://crates.io/crates/fancy-regex) crate (backtracking, supports look-around) or pre-segment with `unicode-segmentation`.
 
-## 10. Pitfalls summary
+## 11. Pitfalls summary
 
 | Pitfall | Mitigation |
 |---|---|
@@ -219,6 +246,7 @@ For grapheme-aware matching, consider the [`fancy-regex`](https://crates.io/crat
 | `to_uppercase` ignores locale. | Use `icu::casemap` for Turkish/Lithuanian/Azeri. |
 | Assuming OS paths are UTF-8. | Use `Path` / `OsStr`; handle `to_str() == None`. |
 | Decoding untrusted bytes with `unsafe`. | Use `from_utf8_lossy` / `from_utf8`. |
+| Sorting user-facing text with `sort()`. | Use `icu::collator` for locale-aware sorting. |
 
 ## Completion checklist
 
@@ -229,6 +257,7 @@ For grapheme-aware matching, consider the [`fancy-regex`](https://crates.io/crat
 - [x] Decode/encode (`from_utf8`, `from_utf8_lossy`, `from_utf8_unchecked`) documented.
 - [x] Legacy encodings (`encoding_rs`) documented.
 - [x] Normalization (`unicode-normalization`) documented.
+- [x] Collation and locale-aware sorting conventions documented.
 - [x] Unicode-aware case conversion (and its locale caveat) documented.
 - [x] Regex Unicode support documented.
 - [x] Pitfalls and idiomatic mitigations documented.

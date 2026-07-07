@@ -3,7 +3,7 @@ title: Rust - Formatting and Structure Style
 status: draft
 version: 0.0.1
 created: 2026-07-06
-updated: 2026-07-06
+updated: 2026-07-07
 ---
 
 # Rust — Formatting and Structure Style
@@ -154,6 +154,79 @@ use std::path::Path;
 ```
 
 Both are acceptable; the project's `rustfmt.toml` and `rust-toolchain.toml` should make the choice explicit.
+
+## Internal ordering of elements
+
+While `rustfmt` handles whitespace and line-wrapping, it does not reorder the logical elements of a file or an `impl` block (other than optionally sorting `use` statements). The community convention for ordering items top-to-bottom is as follows:
+
+### File-level ordering
+
+1. **`#![...]`** inner attributes (e.g., `#![allow(dead_code)]`, `#![warn(missing_docs)]`).
+2. **`mod` declarations** for child modules (`mod foo;`).
+3. **`use` statements** (imports).
+4. **`const` and `static` declarations**.
+5. **`type` aliases**.
+6. **`struct`, `enum`, and `union` definitions**.
+7. **`trait` definitions**.
+8. **`impl` blocks** (first inherent `impl T`, then trait implementations `impl Trait for T`).
+9. **Free `fn` functions**.
+10. **`mod tests`** (the inline test module, usually at the very bottom).
+
+### `impl` block ordering
+
+Within an inherent `impl` block for a type, group elements in this order:
+
+1. **Associated `const` and `type` definitions**.
+2. **Constructors** (`new`, `with_capacity`, `from_*`).
+3. **Public methods** (`pub fn`).
+4. **Private methods** (`fn` helper methods).
+
+```rust
+// File-level and impl-level ordering example
+#![warn(missing_docs)]
+
+use std::collections::HashMap;
+
+const DEFAULT_CAPACITY: usize = 16;
+
+pub struct Cache {
+    data: HashMap<String, String>,
+}
+
+impl Cache {
+    // 1. Associated constants
+    pub const MAX_SIZE: usize = 1024;
+
+    // 2. Constructors
+    pub fn new() -> Self {
+        Self {
+            data: HashMap::with_capacity(DEFAULT_CAPACITY),
+        }
+    }
+
+    // 3. Public methods
+    pub fn get(&self, key: &str) -> Option<&String> {
+        self.data.get(key)
+    }
+
+    // 4. Private methods
+    fn clean_up(&mut self) {
+        // ...
+    }
+}
+
+// Tests at the bottom of the file
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cache_new() {
+        let cache = Cache::new();
+        assert!(cache.data.capacity() >= 16);
+    }
+}
+```
 
 ## Match arm formatting
 

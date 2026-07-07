@@ -1,7 +1,7 @@
 ---
 title: Rust - Security and Privacy
 status: draft
-version: 0.0.1
+version: 0.0.2
 created: 2026-07-06
 updated: 2026-07-06
 ---
@@ -163,6 +163,31 @@ key.zeroize();              // overwrite before going out of scope
 
 `Zeroize` can be derived on structs whose fields are themselves zeroizable, and `ZeroizeOnDrop` runs the wipe on drop automatically.
 
+### 4. Loading secrets securely
+
+Do not hardcode secrets or place them in source-controlled configuration files. Secrets should be injected at runtime via environment variables or fetched from a secure secret store (e.g., AWS Secrets Manager, HashiCorp Vault).
+
+✅ **Do:** Load secrets from the environment or a secure store into `secrecy::Secret` wrappers at startup, and pass them down the call stack.
+
+```rust
+use std::env;
+use secrecy::SecretString;
+
+pub fn load_api_key() -> Result<SecretString, env::VarError> {
+    let key = env::var("API_KEY")?;
+    Ok(SecretString::from(key))
+}
+```
+
+### 5. Privacy and PII (Personally Identifiable Information)
+
+Handling PII safely requires minimizing exposure and securing it both at rest and in transit.
+
+- **Storage:** PII should be encrypted at rest. Consider field-level encryption for highly sensitive fields in databases.
+- **Transmission:** Always transmit PII over secure, authenticated channels (TLS/HTTPS).
+- **Minimization:** Only collect the PII strictly necessary for the application. Ensure data retention policies automatically purge or anonymize PII that is no longer needed.
+- **Logging:** As noted above, never log PII. Ensure logging macros or frameworks drop or mask fields containing user data.
+
 ## Cryptography — never hand-roll it
 
 **Do not implement your own cryptography.** This is the same rule in every language, and Rust is no exception. Use audited crates:
@@ -228,6 +253,31 @@ For untrusted input that becomes SQL/HTML/shell, use parameterized APIs:
 - HTML: `askama`/`maud` with contextual escaping, or `ammonia` for sanitizing untrusted HTML.
 - Shell: avoid `std::process::Command::new("sh").arg("-c")` with interpolation; pass `argv` directly.
 
+### File upload validation
+
+When accepting file uploads, validate the content thoroughly to prevent malicious payloads:
+
+- **Size limits:** Enforce strict maximum file size limits at the framework or reverse-proxy level (e.g., in `axum` via `DefaultBodyLimit`).
+- **Content-Type validation:** Do not rely on the `Content-Type` header provided by the client or the file extension. Inspect the "magic bytes" (e.g., using the `infer` crate) to verify the actual file type.
+- **Storage:** Store uploaded files in isolated storage (like AWS S3) rather than the local filesystem. If local storage is required, use restricted directories outside the web root.
+- **Name sanitization:** Never use user-provided filenames directly for storage. Generate a random identifier (e.g., a UUID) to prevent path traversal vulnerabilities.
+
+## Authentication and Authorization
+
+Rust does not prescribe a specific web framework, but common patterns apply across `axum`, `actix-web`, and others:
+
+- **Authentication (Who you are):** Use established middleware to verify identities. For JWTs or session tokens, validate signatures, audiences, and expirations strictly.
+- **Authorization (What you can do):** Enforce authorization checks at the handler or service boundary.
+
+✅ **Do:** Use Rust's type system to represent and enforce authenticated states (e.g., using the extractor pattern).
+
+```rust
+// Using an extractor pattern (e.g., in axum) to enforce authentication statically.
+pub async fn dashboard_handler(user: AuthenticatedUser) -> impl IntoResponse {
+    // This handler cannot be called unless `user` was successfully extracted and authenticated.
+}
+```
+
 ## Cross-references to OWASP Top 10 (2021)
 
 | OWASP category | Rust-specific mitigation in this section |
@@ -252,6 +302,9 @@ For untrusted input that becomes SQL/HTML/shell, use parameterized APIs:
 - [ ] Crypto from audited crates; constant-time comparisons via `subtle`.
 - [ ] Untrusted input parsed at the boundary into typed domain objects.
 - [ ] Parameterized SQL/HTML/shell; never interpolated strings.
+- [ ] File uploads validated for size, type (via magic bytes), and sanitized filenames.
+- [ ] Authentication and authorization enforced via type-safe extractors/middleware.
+- [ ] Secrets loaded securely from environment or secret managers; PII encrypted at rest and in transit.
 
 ## References
 

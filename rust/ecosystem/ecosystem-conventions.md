@@ -178,14 +178,35 @@ tokio = { version = "1", features = ["full"] }
 - **Crate name vs. identifier:** the crate name uses `-`, but in Rust source it is referenced as a `snake_case` identifier (`use my_crate::...`). Cargo translates automatically.
 - **Reserved prefixes:** `std-*`, `core-*`, `alloc-*`, and the names of standard library modules are reserved; do not squat them.
 
-## 10. The specification process: RFCs
+## 10. Module system and public API conventions
+
+Rust's module system is explicit. The way you organize code internally often differs from how you want consumers to see it.
+
+- **`pub use` re-exports:** It is highly idiomatic to have a deep internal module hierarchy (e.g., `src/client/http.rs`, `src/client/websocket.rs`) but expose a flat public API. This is done by re-exporting internal items in `lib.rs` or a parent module: `pub use client::http::Client;`. This keeps internal file structure flexible without breaking the public contract.
+- **The `prelude` pattern:** Libraries that require consumers to import many traits or types often provide a `prelude` module. Users can then write `use my_crate::prelude::*;` to get everything needed for common usage. This should be used sparingly, primarily for traits (which must be in scope to use their methods) rather than structs. (Example: `std::io::prelude::*`).
+
+## 11. Cross-language interop (FFI and WebAssembly)
+
+Rust is frequently used as a drop-in replacement for C/C++ or compiled to WebAssembly. The ecosystem has strong conventions for both:
+
+### C FFI (Foreign Function Interface)
+- **`-sys` crates:** When binding to a C library (e.g., OpenSSL), the convention is to create a low-level, unsafe crate named `openssl-sys` that only contains the raw FFI declarations. A higher-level, safe wrapper crate named `openssl` is then published that depends on the `-sys` crate.
+- **Tooling:** [`bindgen`](https://crates.io/crates/bindgen) is the standard for generating Rust FFI bindings from C headers. [`cbindgen`](https://crates.io/crates/cbindgen) is the standard for generating C headers from Rust code.
+- **Conventions:** Use `#[no_mangle]` and `extern "C"` to export Rust functions to C. Use types from `std::ffi` (like `CString`, `CStr`, `c_char`, `c_void`) and `libc` to ensure ABI compatibility.
+
+### WebAssembly (Wasm)
+- **`wasm-bindgen`:** The [`wasm-bindgen`](https://crates.io/crates/wasm-bindgen) crate is the ecosystem standard for facilitating high-level interactions between Wasm modules and JavaScript.
+- **Tooling:** [`wasm-pack`](https://rustwasm.github.io/wasm-pack/) is the standard CLI tool for building, testing, and publishing Rust-generated WebAssembly to npm.
+- **Web APIs:** The `js-sys` and `web-sys` crates provide raw bindings to JavaScript standard built-ins and Web APIs, respectively.
+
+## 12. The specification process: RFCs
 
 - Rust evolves through **RFCs** (Request For Comments), hosted at [rust-lang/rfcs](https://github.com/rust-lang/rfcs). This is the equivalent of Python's PEPs or Java's JEPs.
 - Major changes (language features, edition changes, large library additions) require a merged RFC; smaller changes go through the relevant team's PR review.
 - Teams (compiler, libs, lang, cargo, infra, etc.) are the governance bodies; see [Rust Governance](https://www.rust-lang.org/governance).
 - The [API Guidelines](https://rust-lang.github.io/api-guidelines/) are a community-recognized set of conventions for *designing* public Rust APIs (not a language spec).
 
-## 11. Canonical community resources
+## 13. Canonical community resources
 
 | Resource | Link |
 |---|---|
@@ -208,6 +229,8 @@ tokio = { version = "1", features = ["full"] }
 - [x] Categories and keywords documented.
 - [x] Editions and `cargo fix --edition` documented.
 - [x] Crate naming conventions documented.
+- [x] Module system and public API conventions documented (pub use, prelude).
+- [x] Cross-language interop documented (WASM, FFI).
 - [x] RFC process and community resources documented.
 
 ### References

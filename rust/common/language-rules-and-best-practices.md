@@ -3,12 +3,22 @@ title: Rust - Language Rules and Best Practices
 status: draft
 version: 0.0.1
 created: 2026-07-06
-updated: 2026-07-06
+updated: 2026-07-07
 ---
 
 # Rust — Language Rules and Best Practices
 
 This section catalogs the idioms that distinguish idiomatic Rust from code that merely compiles. The throughline: **work with the borrow checker, treat errors as values, prefer combinators over imperative plumbing, and use `unsafe` only with a safety proof.** Clippy (`rust-lang.github.io/rust-clippy/master/`) is the de facto enforcer of these idioms.
+
+## Typing Model Overview
+
+Rust is a statically typed, strongly typed language with type inference.
+- **Static and Strong:** All types are known at compile time, and implicit type conversions (coercions) are strictly limited (e.g., deref coercion). You cannot silently mix mismatched types.
+- **Type Inference:** The compiler infers types for most local variables. Explicit type annotations are typically only required in function signatures, `const`/`static` declarations, or when an expression is ambiguous (e.g., using the turbofish syntax `"42".parse::<u32>().unwrap()`).
+- **Traits as Interfaces:** Rust does not use classical inheritance. Instead, behavior is shared using traits. A type can implement a trait, and functions can accept generic types constrained by traits.
+- **Algebraic Data Types (ADTs):** Enums in Rust can contain data, allowing for powerful representation of state (e.g., `Option<T>` and `Result<T, E>`).
+
+Idiomatic Rust leverages the type system to enforce invariants at compile time (e.g., the Type State pattern or using newtypes).
 
 ## Ownership, borrowing, lifetimes
 
@@ -296,6 +306,21 @@ fn split_at_mut(xs: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
 
 ❌ **Don't** use `unsafe` to escape the borrow checker when you don't have a proof of soundness — that defeats the language's central guarantee and is the most common source of security bugs in Rust (Section 9).
 
+## Discouraged and Deprecated Features
+
+While Rust guarantees backward compatibility, some patterns and features are strongly discouraged by the community and tooling:
+- **`std::mem::uninitialized`:** Officially deprecated. Use `std::mem::MaybeUninit` instead. `uninitialized` is inherently unsafe because it allows the creation of invalid values (e.g., a boolean that is neither true nor false), leading to immediate undefined behavior.
+- **`try!` macro:** Deprecated in favor of the `?` operator, which is more concise and chains elegantly.
+- **Global Mutable State (`static mut`):** While available, its use is heavily discouraged and typically requires `unsafe` blocks just to access. Prefer `std::sync::Mutex`, `RwLock`, or `std::sync::OnceLock` / `std::sync::LazyLock` for safe global state.
+
+## Complexity Limits
+
+Clippy sets community-recognized defaults for complexity limits. While these can be tuned, the defaults reflect idiomatic expectations:
+- **Function Length (`clippy::too_many_lines`):** Functions longer than 100 lines trigger a warning. Idiomatic Rust breaks large logic blocks into smaller, testable helper functions.
+- **Argument Count (`clippy::too_many_arguments`):** Functions with more than 7 arguments trigger a warning. Use structs or the Builder pattern to group related parameters.
+- **Cognitive Complexity (`clippy::cognitive_complexity`):** Warns when a function's control flow becomes too deeply nested or convoluted (threshold default is 25). Early returns and breaking out logic into separate functions are the preferred mitigations.
+- **Type Complexity (`clippy::type_complexity`):** Warns on deeply nested types (e.g., `Vec<Vec<Box<(u32, u32)>>>`). Use type aliases or define named structs/enums to clarify intent.
+
 ## Clippy — the best-practices linter
 
 `cargo clippy` runs the rustc lints plus hundreds of style/correctness/perf lints. Lint groups, in increasing strictness:
@@ -329,6 +354,7 @@ Two recognized positions: enable `pedantic` for strictness, or stay on default +
 
 ## Summary checklist
 
+- [ ] Understanding of the strong, static typing model and use of type inference.
 - [ ] Borrow instead of clone; `&str` / `&[T]` in signatures.
 - [ ] `Result`/`Option` + `?` for fallible code; no `unwrap` in production paths.
 - [ ] Exhaustive `match`; avoid fragile wildcards on enums.
@@ -336,6 +362,8 @@ Two recognized positions: enable `pedantic` for strictness, or stay on default +
 - [ ] Newtype for distinct primitive identities.
 - [ ] Builder for multi-optional constructors.
 - [ ] Every `unsafe` block has a `// SAFETY:` comment.
+- [ ] Avoidance of deprecated features like `std::mem::uninitialized` or `try!`.
+- [ ] Adherence to community complexity limits (function length, argument count, cognitive complexity).
 - [ ] Deliberate `clippy` configuration in `lib.rs`/`main.rs`.
 
 ## References

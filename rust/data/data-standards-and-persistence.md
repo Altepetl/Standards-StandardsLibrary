@@ -261,6 +261,27 @@ This mirrors the SQL ecosystem at large and is independent of Rust's source nami
 | Monetary values | `DECIMAL` / `NUMERIC` column ↔ `rust_decimal::Decimal`; never `FLOAT`. |
 | Booleans | native `BOOLEAN` column ↔ Rust `bool`. |
 
+## 11. Nullability, Defaults, and Constraint Conventions
+
+When defining database schemas in Rust applications (whether via `sqlx` migrations or `diesel`), the conventions for nullability and constraints are:
+
+- **Nullability**: Prefer `NOT NULL` by default. Columns should only be nullable if the absence of a value is a valid business state. In Rust, nullable columns map directly to `Option<T>`. Overusing `NULL` forces pervasive `Option` unwrapping and match statements throughout the application logic.
+- **Defaults**: Define defaults at the database layer (`DEFAULT false`, `DEFAULT now()`) rather than the application layer when the default is universal. This ensures data integrity even if the database is modified outside the Rust application.
+- **Constraints**: 
+  - **Check constraints**: Use `CHECK` constraints aggressively for data integrity (e.g., `CHECK (price > 0)` or `CHECK (email LIKE '%@%')`). This provides a strong defense-in-depth guarantee alongside Rust's type system and validation libraries like `validator`.
+  - **Foreign keys**: Always define foreign keys for relational data to ensure referential integrity. 
+  - **Uniqueness**: Use `UNIQUE` constraints for natural keys (e.g., email addresses) rather than checking for existence in application code, which is subject to race conditions.
+
+## 12. Indexing Conventions and Trade-offs
+
+Proper indexing is critical for performance. The Rust ecosystem relies on the underlying database for indexing, but conventions dictate how and when to apply them:
+
+- **When to index**: Index columns that are frequently used in `WHERE`, `ORDER BY`, `JOIN`, or `GROUP BY` clauses. Primary keys and foreign keys should almost always be indexed.
+- **Trade-offs**: 
+  - **Read vs. Write Performance**: Indexes speed up read operations but slow down write operations (INSERT, UPDATE, DELETE). Over-indexing can degrade write performance and increase storage costs.
+  - **Composite Indexes**: Use composite indexes for queries that filter on multiple columns together. The column order matters; place the most selective column first. A composite index on `(a, b)` can satisfy queries on `a` or `a, b`, but not `b` alone.
+- **Naming**: As established in Section 9, name indexes explicitly (e.g., `idx_users_email` or `idx_orders_status_created_at`) rather than relying on auto-generated names, as explicit names make dropping or modifying indexes in future migrations much easier.
+
 ## Completion checklist
 
 - [x] Database-access options documented side by side (sqlx, Diesel, SeaORM, rusqlite, drivers).
@@ -272,6 +293,8 @@ This mirrors the SQL ecosystem at large and is independent of Rust's source nami
 - [x] Schema-as-code, seed, and test data documented.
 - [x] NoSQL landscape documented.
 - [x] Identifier, ID, timestamp, monetary conventions documented.
+- [x] Nullability, default, and constraint conventions documented.
+- [x] Indexing conventions documented with trade-offs.
 
 ### References
 

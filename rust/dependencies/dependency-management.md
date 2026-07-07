@@ -12,7 +12,7 @@ updated: 2026-07-06
 
 ## 1. Cargo and `Cargo.toml`
 
-Cargo is the canonical tool, installed with the Rust toolchain via `rustup`. Every Rust package is described by a manifest named `Cargo.toml` (TOML format), and the resolver produces `Cargo.lock` (the lockfile).
+Cargo is the canonical tool, installed with the Rust toolchain via `rustup`. Every Rust package is described by a manifest named `Cargo.toml` (TOML format), and the resolver produces `Cargo.lock` (the lockfile). For a broader look at the package management ecosystem and conventions, see Section 18 (Ecosystem Conventions).
 
 Canonical sources:
 - The Cargo Book — https://doc.rust-lang.org/cargo/
@@ -188,6 +188,13 @@ serde = { workspace = true }
 | `cargo update` | Built-in. Updates `Cargo.lock` to the latest versions allowed by the requirements in `Cargo.toml`. Does **not** modify `Cargo.toml`. |
 | `cargo add` / `cargo remove` | Built-in since Cargo 1.62. Adds/removes a dependency and edits `Cargo.toml`. |
 | `cargo upgrade` (cargo-edit) | The `cargo-edit` crate provides `cargo upgrade`, which **rewrites the version requirements in `Cargo.toml`** to newer numbers. Not part of rustup. |
+
+### Update cadence conventions
+
+While there is no single universally mandated cadence, the community recognizes the following practices:
+- **Routine Updates**: Run `cargo update` on a regular cadence (e.g., weekly or bi-weekly via automated tools like Dependabot or Renovate) to keep the lockfile fresh and incorporate non-breaking patch and minor updates.
+- **Major Upgrades**: Schedule time periodically (e.g., quarterly) to evaluate and apply major version upgrades (which may contain breaking changes) using `cargo upgrade` or similar tools.
+- **Security Patches**: Apply updates immediately when tools like `cargo audit` or `cargo deny` report a vulnerability in the dependency tree.
 
 ✅ `cargo update -p serde --precise 1.0.197` to pin a single transitive dependency without touching everything.
 

@@ -1,7 +1,7 @@
 ---
 title: Rust - Naming Conventions
 status: draft
-version: 0.0.1
+version: 0.0.2
 created: 2026-07-06
 updated: 2026-07-06
 ---
@@ -17,13 +17,14 @@ The single organizing principle: **type-level constructs use `UpperCamelCase`; v
 | Construct | Convention | Example |
 |---|---|---|
 | Crates | lowercase, digits, `_` or `-`; prefer kebab-case in `Cargo.toml`, underscores in `use` | `serde-json` → `serde_json` |
-| Modules | `snake_case` | `std::collections` |
+| Modules / Files | `snake_case` | `std::collections`, `my_module.rs` |
 | Types (`struct`, `enum`, `union`) | `UpperCamelCase` | `HttpClient`, `OrderStatus` |
+| Enum variants | `UpperCamelCase` | `Option::Some`, `HttpStatus::Ok` |
 | Traits | `UpperCamelCase` | `Display`, `IntoIterator` |
 | Type parameters | `UpperCamelCase`, single letter or short word | `T`, `K`, `V`, `Element` |
 | Functions / methods | `snake_case` | `read_to_string`, `as_str` |
 | Local variables / parameters | `snake_case` | `request_count`, `buf` |
-| Constants / statics / enum variants | `SCREAMING_SNAKE_CASE` | `MAX_CONNECTIONS`, `Color::RED` |
+| Constants / statics | `SCREAMING_SNAKE_CASE` | `MAX_CONNECTIONS` |
 | Lifetimes | short lowercase, `'a` for generic, descriptive for clarity | `'a`, `'src`, `'input` |
 | Macros | `snake_case` (functions), `UpperCamelCase` if like a type | `println!`, `vec!` |
 
@@ -35,6 +36,27 @@ Per RFC 430 and the API Guidelines:
 - In `snake_case`, acronyms are fully lower-cased: `is_xid_start`, `parse_uuid`, `to_ascii_lowercase`.
 
 > Note: the `Uuid`-over-`UUID` recommendation is one of the more contested points in the guidelines; some codebases keep the all-caps acronym for readability. Either way, be **consistent within a crate**.
+
+### Identifier rules
+
+In Rust, identifiers can contain ASCII letters (`a-z`, `A-Z`), digits (`0-9`), and underscores (`_`). They must not start with a digit. The language supports raw identifiers using the `r#` prefix, allowing you to use reserved keywords (like `match` or `type`) as identifiers (e.g., `r#match`). Non-ASCII Unicode identifiers are supported in modern Rust but are generally discouraged for public APIs outside of specialized domains.
+
+### File and module naming
+
+Files and directories in Rust map directly to module names, and therefore strictly follow `snake_case`.
+
+- ✅ **Do**: `my_module.rs`, `network_handler.rs`, `src/http_client/mod.rs`
+- ❌ **Don't**: `MyModule.rs`, `NetworkHandler.rs`, `src/HTTPClient/`
+
+Because the module system derives the module name from the file name, using non-standard casing for file names will lead to non-idiomatic `mod` declarations.
+
+### Visibility and private members
+
+Unlike some languages (like Python or JavaScript), Rust does not use an underscore prefix (`_`) to denote private fields or methods. Visibility is strictly enforced by the compiler via the `pub` keyword.
+
+- Items (fields, methods, types) are **private by default**.
+- Use `pub`, `pub(crate)`, or `pub(super)` to explicitly expose them.
+- Do **not** prefix private members with `_`. In Rust, a leading underscore (e.g., `_unused_var`) specifically tells the compiler to silence the `unused_variables` warning, and should only be used for bindings that are intentionally ignored.
 
 ## Type-level naming details
 
@@ -107,20 +129,21 @@ let UserID = 42;                       // local vars are snake_case
 static MaxRetries: u32 = 3;            // statics are SCREAMING_SNAKE_CASE
 ```
 
-## Constants and statics
+## Constants, statics, and enum variants
 
 ```rust
 const MAX_CONNECTIONS: u32 = 100;
 static DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 
+// Enum variants use UpperCamelCase, unlike constants
 enum HttpStatus {
-    Ok = 200,            // ❌ variant should be SCREAMING_SNAKE_CASE
-    NotFound = 404,
+    OK = 200,            // ❌ Don't use SCREAMING_SNAKE_CASE for variants
+    NOT_FOUND = 404,
 }
 
 enum HttpStatus {
-    OK = 200,            // ✅
-    NOT_FOUND = 404,
+    Ok = 200,            // ✅ Enum variants are UpperCamelCase
+    NotFound = 404,
 }
 ```
 

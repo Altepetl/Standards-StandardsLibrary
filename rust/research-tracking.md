@@ -12,29 +12,29 @@ Coordinated via the **single-writer variant**: the coordinator (main agent) is t
 
 | Status | Research Point | Details | Start | End |
 |--------|----------------|---------|-------|-----|
-| ✅ | 1. Scope and Purpose |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 2. Naming Conventions |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 3. Formatting and Structure Style |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 4. Project Architecture and Directory Layout |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 5. Language Rules and Best Practices |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 6. Documentation and Comments |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 7. Error Handling, Exceptions, and Logging |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 8. API Design and Data Contracts |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 9. Security and Privacy |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 10. Dependency Management |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
+| ✅ | 1. Scope and Purpose | Updated applicability dimensions and governance | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 2. Naming Conventions | Fixed enum variants, added identifier rules | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 3. Formatting and Structure Style | Added internal ordering documentation | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 4. Project Architecture and Directory Layout | Added framework layouts, standard ignores | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 5. Language Rules and Best Practices | Added typing model overview and discouraged features | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 6. Documentation and Comments | Added marker comments and README conventions | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 7. Error Handling, Exceptions, and Logging | Added resilience/retry and metrics conventions | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 8. API Design and Data Contracts | Added REST API conventions and standard error responses | 2026-07-06 19:35 | 2026-07-06 19:38 |
+| ✅ | 9. Security and Privacy | Added upload validation, auth patterns, secrets, PII handling | 2026-07-06 19:39 | 2026-07-06 19:41 |
+| ✅ | 10. Dependency Management | Added update cadence and ecosystem reference | 2026-07-06 19:39 | 2026-07-06 19:41 |
 | ✅ | 11. Testing and Quality Validation |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 12. Version Control and Workflow |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
+| ✅ | 12. Version Control and Workflow | Added SLA expectations and reviewer checklists | 2026-07-06 19:39 | 2026-07-06 19:41 |
 | ✅ | 13. Automation Tools (Linters and Formatters) |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 14. Build, Packaging, and Containerization |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
+| ✅ | 14. Build, Packaging, and Containerization | Added env configuration and artifact naming | 2026-07-06 19:39 | 2026-07-06 19:41 |
 | ✅ | 15. Performance and Resource Efficiency |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
 | ✅ | 16. Concurrency and Thread Safety |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
 | ✅ | 17. Governance and Standard Updates |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 18. Ecosystem Conventions |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
+| ✅ | 18. Ecosystem Conventions | Added cross-language interop and module system conventions | 2026-07-06 19:39 | 2026-07-06 19:41 |
 | ✅ | 19. Development Toolchain |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
 | ✅ | 20. Date, Time, Time Zones, and Numeric Formats |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
 | ✅ | 21. Internationalization and Localization |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 22. Character Encoding and Unicode |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 23. Data Standards and Persistence |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
-| ✅ | 24. CI/CD and Deployment |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
+| ✅ | 22. Character Encoding and Unicode | Added collation and sorting conventions | 2026-07-06 19:39 | 2026-07-06 19:41 |
+| ✅ | 23. Data Standards and Persistence | Added constraints and indexing tradeoffs | 2026-07-06 19:39 | 2026-07-06 19:41 |
+| ✅ | 24. CI/CD and Deployment | Added deployment strategies, IaC, physical envs | 2026-07-06 19:39 | 2026-07-06 19:41 |
 | ✅ | 25. Accessibility (a11y) |  | 2026-07-06 17:18 | 2026-07-06 17:44 |
 | ✅ | 26. Distributed Messaging and Asynchronous Communication |  | 2026-07-06 17:18 | 2026-07-06 17:44 |

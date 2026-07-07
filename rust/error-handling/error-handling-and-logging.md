@@ -3,7 +3,7 @@ title: Rust - Error Handling, Exceptions, and Logging
 status: draft
 version: 0.0.1
 created: 2026-07-06
-updated: 2026-07-06
+updated: 2026-07-07
 ---
 
 # Rust — Error Handling, Exceptions, and Logging
@@ -283,6 +283,108 @@ Both `log` (with `kv` feature / backends like `slog`) and `tracing` support key-
 
 Never log secrets, tokens, credentials, or PII at any level. Section 9 covers the `secrecy` and `zeroize` crates; the headline rule for this section: treat log statements as if they will be shipped to an aggregator, because they usually are.
 
+## Input Validation
+
+Validating input at the boundaries (e.g., HTTP handlers, CLI arguments) prevents invalid data from propagating deeper into the system.
+
+- **Newtypes for Invariants:** Use the newtype pattern to enforce validity at compile-time. If a function takes a `ValidEmail`, the caller *must* have validated it.
+- **The `validator` crate:** A common choice for declarative validation using derive macros on structs.
+- **Early Returns:** Validation failures should be returned immediately as a `Result::Err`, typically mapping to a `400 Bad Request` in web APIs rather than a `500 Internal Server Error`.
+
+```rust
+use validator::Validate;
+
+#[derive(Validate)]
+pub struct SignupRequest {
+    #[validate(email)]
+    pub email: String,
+    #[validate(length(min = 8))]
+    pub password: String,
+}
+
+pub fn signup(req: SignupRequest) -> Result<(), AppError> {
+    req.validate().map_err(AppError::InvalidInput)?;
+    // ...
+    Ok(())
+}
+```
+
+## Resilience and Retries
+
+Fail-fast for permanent errors (e.g., validation failures, unauthorized access), but employ retry mechanisms for transient errors (e.g., network timeouts, temporary database unavailability).
+
+- **Retry Crates:** Use crates like `tokio-retry` or `backoff` to implement exponential backoff and jitter.
+- **Idempotency:** Ensure the operation being retried is idempotent to prevent side effects on duplicate executions.
+- **Timeouts:** Wrap network calls with `tokio::time::timeout` to prevent hanging requests.
+
+```rust
+use backoff::{future::retry, ExponentialBackoff};
+
+async fn fetch_data() -> Result<Data, reqwest::Error> {
+    retry(ExponentialBackoff::default(), || async {
+        let res = reqwest::get("https://api.example.com").await?;
+        res.error_for_status()?.json().await.map_err(backoff::Error::transient)
+    })
+    .await
+}
+```
+
+## Distributed Tracing and Correlation IDs
+
+In microservices or distributed systems, passing a Correlation ID ensures that logs from a single request can be traced across multiple services.
+
+- **OpenTelemetry integration:** Use `tracing-opentelemetry` to export spans to systems like Jaeger, Zipkin, or Datadog.
+- **Correlation IDs:** Extract the `X-Request-Id` or W3C `traceparent` from incoming requests and inject it into the `tracing` Span.
+- **Context Propagation:** Use the `opentelemetry` crate's context propagation to inject trace context into outgoing HTTP requests (e.g., via `reqwest` middleware).
+
+```rust
+use tracing::{info_span, Instrument};
+
+async fn handle_request(request_id: &str) {
+    let span = info_span!("http_request", request_id = %request_id);
+    async move {
+        tracing::info!("Processing request");
+        // ...
+    }
+    .instrument(span)
+    .await;
+}
+```
+
+## Metrics Conventions
+
+Beyond logging, track application behavior with metrics (counters, gauges, histograms) to build dashboards and alerts.
+
+- **The `metrics` facade:** Similar to the `log` crate, the `metrics` crate provides a facade (macros like `counter!`, `gauge!`, `histogram!`), allowing the backend (e.g., Prometheus) to be configured in the binary.
+- **Prometheus:** The `metrics-exporter-prometheus` crate is commonly used to expose a `/metrics` endpoint.
+- **Conventions:**
+  - *Counters:* Total requests, error counts.
+  - *Histograms:* Request latencies, payload sizes.
+  - *Gauges:* Current active connections, memory usage.
+
+```rust
+use metrics::{counter, histogram};
+use std::time::Instant;
+
+pub async fn process_job() {
+    let start = Instant::now();
+    counter!("jobs_processed_total").increment(1);
+    
+    // ... do work ...
+    
+    histogram!("job_processing_duration_seconds").record(start.elapsed().as_secs_f64());
+}
+```
+
+## Health Checks
+
+Long-running services (e.g., web servers) must expose endpoints for orchestration tools (like Kubernetes) to monitor their state.
+
+- **Liveness Probes (`/health/live`):** Returns `200 OK` simply if the process is running and hasn't deadlocked.
+- **Readiness Probes (`/health/ready`):** Returns `200 OK` only if the service is fully ready to handle traffic (e.g., database connection pool is established, caches are warmed).
+
+Using a framework like `axum` or `actix-web`, these are typically simple `GET` routes returning a JSON status or plain text `OK`.
+
 ## Summary checklist
 
 - [ ] Fallible code returns `Result`/`Option`; propagate with `?`.
@@ -291,6 +393,10 @@ Never log secrets, tokens, credentials, or PII at any level. Section 9 covers th
 - [ ] `unwrap`/`expect` only in tests, prototypes, or with a proven invariant.
 - [ ] A deliberate logging choice (`log` or `tracing`), with a subscriber/backend configured in the binary.
 - [ ] Structured fields over interpolated strings; no secrets in logs.
+- [ ] Input data is validated at the boundary using types or crates like `validator`.
+- [ ] Resilience mechanisms (exponential backoff, timeouts) are applied for transient failures.
+- [ ] Metrics (counters, histograms) and tracing (OpenTelemetry, correlation IDs) are used for observability.
+- [ ] Services expose readiness and liveness health checks.
 
 ## References
 
@@ -300,4 +406,7 @@ Never log secrets, tokens, credentials, or PII at any level. Section 9 covers th
 - `anyhow` — `github.com/dtolnay/anyhow`.
 - `tracing` — `docs.rs/tracing`.
 - `env_logger` — `docs.rs/env_logger`.
+- `metrics` — `docs.rs/metrics`.
+- `validator` — `docs.rs/validator`.
+- `backoff` — `docs.rs/backoff`.
 - Rust API Guidelines — Documentation of failure (C-FAILURE) — `rust-lang.github.io/api-guidelines/documentation.html`.

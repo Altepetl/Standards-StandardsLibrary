@@ -213,6 +213,37 @@ The [Twelve-Factor App](https://12factor.net/) maps cleanly to Rust:
 - **Database changes:** coordinated with expand/contract migrations (Section 23); a rollback must never require a schema revert.
 - **Roll back by redeploying the previous artifact tag** (the binary is immutable; this is safe). Roll *forward* to fix when feasible.
 
+## 10. Environment separation
+
+For services, explicit physical environment separation is standard to ensure isolation and control blast radius. The typical progression is:
+
+- **Development/Local:** Ephemeral databases, mocked external services, debug builds.
+- **Testing/QA (or Staging):** Dedicated infrastructure (e.g., a separate Kubernetes namespace or AWS account) mimicking production, realistic data sets (often anonymized), release builds.
+- **Production:** High availability, strict access controls, read replicas, active monitoring, release builds.
+
+Configuration and secrets must be injected per environment via environment variables or a secret manager. The artifact (binary/container) MUST be built once and promoted unchanged across all non-local environments.
+
+## 11. Deployment strategies
+
+Rust binaries are fast to start and stateless, making them well-suited for modern deployment strategies. The recognized strategies in this community include:
+
+- **Rolling Deployments:** The default for most containerized Rust services. New instances are brought up alongside old ones, traffic is gradually shifted, and old instances are terminated.
+- **Blue-Green Deployments:** Spin up a completely new environment (Green) alongside the current one (Blue). Once Green is verified via smoke tests, switch the router to point to Green. Offers rapid rollback.
+- **Canary Deployments:** Deploy the new Rust service to a small percentage of nodes or route a fraction of traffic to it. Monitor error rates and latency before a full rollout.
+- **Feature-Flag-Driven:** Deploy the code disabled, then enable it via a runtime configuration system.
+
+For zero-downtime deployments, ensure your Rust service handles SIGTERM gracefully (e.g., via `tokio::signal::ctrl_c`) to drain connections before exiting.
+
+## 12. Infrastructure as Code (IaC)
+
+Infrastructure-as-code conventions dictate that the infrastructure hosting Rust applications must be defined in version-controlled declarative files. Common choices in the Rust ecosystem:
+
+- **Terraform / OpenTofu:** The industry standard for defining AWS/GCP/Azure resources.
+- **Kubernetes Manifests / Helm:** Standard for container orchestration.
+- **Pulumi:** Provides Rust bindings for IaC, allowing infrastructure definition using Rust code, though less common than mainstream options.
+
+Conventionally, IaC lives either in a dedicated directory (e.g., `infra/` or `deploy/`) alongside the Rust application, or in a centralized infrastructure monorepo for the whole organization.
+
 ## Completion checklist
 
 - [x] Dominant CI platform (GitHub Actions) and conventional pipeline documented.
@@ -224,6 +255,9 @@ The [Twelve-Factor App](https://12factor.net/) maps cleanly to Rust:
 - [x] Feature-flag patterns documented.
 - [x] 12-factor mapping for Rust documented.
 - [x] Release and rollback conventions documented.
+- [x] Environment separation documented.
+- [x] Deployment strategies documented.
+- [x] Infrastructure as Code conventions documented.
 
 ### References
 
